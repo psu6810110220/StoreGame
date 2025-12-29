@@ -18,7 +18,7 @@ export const createBooking = async (token: string, bookingData: any) => {
 };
 
 export const getMyBookings = async (token: string) => {
-    const response = await fetch(`${API_URL}/bookings/my-bookings`, {
+    const response = await fetch(`${API_URL}/bookings/my`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },

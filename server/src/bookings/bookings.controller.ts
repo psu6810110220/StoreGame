@@ -17,7 +17,7 @@ export class BookingsController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get('my-bookings')
+    @Get('my')
     getMyBookings(@Request() req) {
         return this.bookingsService.getUserBookings(req.user);
     }

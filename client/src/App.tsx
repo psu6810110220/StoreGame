@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import BookingSummary from "./pages/BookingSummary";
+import MyBookings from "./pages/MyBookings";
 
 // แก้ตรง JSX.Element เป็น React.ReactNode
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -39,6 +40,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <BookingSummary />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-bookings"
+            element={
+              <ProtectedRoute>
+                <MyBookings />
               </ProtectedRoute>
             }
           />

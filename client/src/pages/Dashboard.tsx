@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import GameManagement from "./GameManagement";
 import GameList from "../components/GameList";
@@ -6,6 +7,7 @@ import SnowBackground from "../components/SnowBackground";
 
 function Dashboard() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [showGameManagement, setShowGameManagement] = useState(false);
 
   return (
@@ -21,6 +23,14 @@ function Dashboard() {
         </div>
 
         <div className="flex items-center gap-4">
+          {/* My Bookings Button */}
+          <button
+            onClick={() => navigate('/my-bookings')}
+            className="hidden sm:flex text-sm font-bold text-slate-300 hover:text-white border border-white/10 hover:border-indigo-500/50 bg-slate-700/50 hover:bg-slate-700 px-4 py-2 rounded-full transition-all"
+          >
+            📅 My Bookings
+          </button>
+
           <div className="text-right hidden sm:block">
             <p className="text-sm font-semibold text-slate-200">{user?.username || "Guest User"}</p>
             <p className="text-xs text-indigo-400 capitalize">{user?.role || "user"}</p>
@@ -107,7 +117,7 @@ function Dashboard() {
       <footer className="py-10 text-center text-slate-500 text-sm border-t border-white/5 mt-20 relative z-10">
         <p>© 2025 StoreGame Marketplace. Happy Holidays! ❄️</p>
       </footer>
-    </div>
+    </div >
   );
 }
 
