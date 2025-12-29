@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getGames } from '../services/games.service';
 
@@ -13,6 +14,7 @@ interface Game {
 
 const GameList: React.FC = () => {
     const { token } = useAuth();
+    const navigate = useNavigate();
     const [games, setGames] = useState<Game[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -93,12 +95,13 @@ const GameList: React.FC = () => {
 
                                 <button
                                     disabled={game.stockQuantity === 0}
+                                    onClick={() => navigate('/booking-summary', { state: { game } })}
                                     className={`mt-4 w-full py-2 rounded-lg font-medium transition-colors ${game.stockQuantity > 0
-                                            ? 'bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800'
-                                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                        ? 'bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800 shadow-lg shadow-indigo-500/30'
+                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                         }`}
                                 >
-                                    {game.stockQuantity > 0 ? 'Add to Cart' : 'Sold Out'}
+                                    {game.stockQuantity > 0 ? 'Book This Game' : 'Sold Out'}
                                 </button>
                             </div>
                         </div>

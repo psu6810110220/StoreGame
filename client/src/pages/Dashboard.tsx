@@ -15,7 +15,7 @@ function Dashboard() {
       <nav className="bg-slate-800/80 backdrop-blur-md shadow-sm border-b border-white/10 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
         <div className="flex items-center gap-2">
           <div className="bg-indigo-500 p-2 rounded-lg text-white font-bold shadow-lg shadow-indigo-500/50">SG</div>
-          <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">
+          <span className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-indigo-400 to-purple-400">
             StoreGame
           </span>
         </div>
@@ -47,8 +47,8 @@ function Dashboard() {
             <div className="mt-4 flex items-center gap-3">
               <span className="text-slate-400 font-medium">Your Status:</span>
               <span className={`px-4 py-1.5 rounded-full text-sm font-bold shadow-sm ${user?.role === 'admin'
-                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                  : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
                 }`}>
                 {user?.role?.toUpperCase() || "USER"}
               </span>
@@ -58,7 +58,7 @@ function Dashboard() {
 
         {/* 🛠️ ส่วนแสดงผลเฉพาะ Admin เท่านั้น */}
         {user?.role === 'admin' && (
-          <section className="bg-gradient-to-br from-indigo-900 to-purple-900 rounded-3xl p-8 shadow-xl text-white border border-indigo-500/30">
+          <section className="bg-linear-to-br from-indigo-900 to-purple-900 rounded-3xl p-8 shadow-xl text-white border border-indigo-500/30">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div>
                 <h3 className="text-2xl font-bold flex items-center gap-3">
@@ -77,8 +77,8 @@ function Dashboard() {
                 <button
                   onClick={() => setShowGameManagement(!showGameManagement)}
                   className={`flex-1 px-6 py-3 rounded-2xl font-bold transition transform hover:-translate-y-1 shadow-md border backdrop-blur-md ${showGameManagement
-                      ? 'bg-rose-500/20 border-rose-400 text-rose-100'
-                      : 'bg-indigo-500 text-white shadow-indigo-500/30'
+                    ? 'bg-rose-500/20 border-rose-400 text-rose-100'
+                    : 'bg-indigo-500 text-white shadow-indigo-500/30'
                     }`}
                 >
                   {showGameManagement ? "Close Games" : "Manage Games"}

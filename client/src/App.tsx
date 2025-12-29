@@ -6,6 +6,7 @@ import { CartProvider } from "./context/CartContext";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import BookingSummary from "./pages/BookingSummary";
 
 // แก้ตรง JSX.Element เป็น React.ReactNode
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -30,6 +31,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/booking-summary"
+            element={
+              <ProtectedRoute>
+                <BookingSummary />
               </ProtectedRoute>
             }
           />
