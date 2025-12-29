@@ -94,129 +94,165 @@ const GameManagement: React.FC = () => {
     }
 
     return (
-        <div className="p-6 bg-white rounded-lg shadow-md mt-6">
-            <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-800">🎮 Game Management</h2>
+        <div className="p-6 bg-slate-800 rounded-lg shadow-lg border border-slate-700 mt-6 text-white">
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold flex items-center gap-2">
+                    <span className="text-2xl">🎮</span> Game Management
+                </h2>
                 <button
                     onClick={() => {
                         setEditingGame(null);
                         setFormData({ title: "", description: "", price: 0, stockQuantity: 0, imageUrl: "" });
                         setIsModalOpen(true);
                     }}
-                    className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 font-semibold shadow-md transition-all active:scale-95"
                 >
-                    + Add New Game
+                    <span className="text-xl">+</span> Add New Game
                 </button>
             </div>
 
-            <div className="overflow-x-auto">
-                <table className="min-w-full bg-white border">
-                    <thead className="bg-gray-100">
-                        <tr>
-                            <th className="py-2 px-4 border">Title</th>
-                            <th className="py-2 px-4 border">Price</th>
-                            <th className="py-2 px-4 border">Stock</th>
-                            <th className="py-2 px-4 border">Actions</th>
+            <div className="overflow-hidden rounded-xl border border-slate-700 shadow-sm">
+                <table className="min-w-full bg-slate-800 text-left">
+                    <thead>
+                        <tr className="bg-slate-700/50 text-slate-300 border-b border-slate-700">
+                            <th className="py-4 px-6 font-semibold uppercase tracking-wider text-sm">Title</th>
+                            <th className="py-4 px-6 font-semibold uppercase tracking-wider text-sm">Price</th>
+                            <th className="py-4 px-6 font-semibold uppercase tracking-wider text-sm">Stock</th>
+                            <th className="py-4 px-6 font-semibold uppercase tracking-wider text-sm text-center">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {games.map((game) => (
-                            <tr key={game.id} className="hover:bg-gray-50 text-center">
-                                <td className="py-2 px-4 border text-left">{game.title}</td>
-                                <td className="py-2 px-4 border text-green-600 font-bold">฿{game.price}</td>
-                                <td className="py-2 px-4 border">{game.stockQuantity}</td>
-                                <td className="py-2 px-4 border space-x-2">
-                                    <button
-                                        onClick={() => handleEdit(game)}
-                                        className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
-                                    >
-                                        Edit
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(game.id)}
-                                        className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
-                                    >
-                                        Delete
-                                    </button>
+                    <tbody className="divide-y divide-slate-700">
+                        {games.length === 0 ? (
+                            <tr>
+                                <td colSpan={4} className="py-8 text-center text-slate-500">
+                                    No games found. Start by adding one!
                                 </td>
                             </tr>
-                        ))}
+                        ) : (
+                            games.map((game) => (
+                                <tr key={game.id} className="hover:bg-slate-700/30 transition-colors">
+                                    <td className="py-4 px-6 font-medium text-white">{game.title}</td>
+                                    <td className="py-4 px-6 font-bold text-emerald-400">฿{game.price.toLocaleString()}</td>
+                                    <td className="py-4 px-6">
+                                        <span className={`px-2 py-1 rounded-md text-xs font-bold ${game.stockQuantity > 0
+                                                ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                                                : 'bg-red-500/20 text-red-300 border border-red-500/30'
+                                            }`}>
+                                            {game.stockQuantity} items
+                                        </span>
+                                    </td>
+                                    <td className="py-4 px-6 text-center space-x-3">
+                                        <button
+                                            onClick={() => handleEdit(game)}
+                                            className="text-indigo-300 hover:text-white bg-indigo-500/20 hover:bg-indigo-500 px-3 py-1.5 rounded-md transition-all text-sm font-medium border border-indigo-500/30"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(game.id)}
+                                            className="text-red-300 hover:text-white bg-red-500/20 hover:bg-red-500 px-3 py-1.5 rounded-md transition-all text-sm font-medium border border-red-500/30"
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
                     </tbody>
                 </table>
             </div>
 
             {/* Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-lg p-6 w-full max-w-md">
-                        <h3 className="text-xl font-bold mb-4">{editingGame ? "Edit Game" : "Add New Game"}</h3>
-                        <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+                    <div className="bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg border border-slate-700 overflow-hidden transform transition-all scale-100 p-0">
+                        <div className="p-6 border-b border-slate-700 flex justify-between items-center bg-slate-900/50">
+                            <h3 className="text-xl font-bold text-white">
+                                {editingGame ? "✏️ Edit Game" : "✨ Add New Game"}
+                            </h3>
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="text-slate-400 hover:text-white transition-colors"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="p-6 space-y-5">
                             <div>
-                                <label className="block text-sm font-medium">Title</label>
+                                <label className="block text-sm font-medium text-slate-300 mb-1">Title</label>
                                 <input
                                     type="text"
                                     required
-                                    className="w-full border rounded p-2"
+                                    className="w-full bg-slate-900 border border-slate-600 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                                    placeholder="Enter game title"
                                     value={formData.title}
                                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                 />
                             </div>
+
                             <div>
-                                <label className="block text-sm font-medium">Description</label>
+                                <label className="block text-sm font-medium text-slate-300 mb-1">Description</label>
                                 <textarea
                                     required
-                                    className="w-full border rounded p-2"
+                                    rows={3}
+                                    className="w-full bg-slate-900 border border-slate-600 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition resize-none"
+                                    placeholder="What is this game about?"
                                     value={formData.description}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                 />
                             </div>
-                            <div className="flex space-x-4">
+
+                            <div className="flex gap-4">
                                 <div className="flex-1">
-                                    <label className="block text-sm font-medium">Price</label>
+                                    <label className="block text-sm font-medium text-slate-300 mb-1">Price (฿)</label>
                                     <input
                                         type="number"
                                         required
                                         min="0"
-                                        className="w-full border rounded p-2"
+                                        className="w-full bg-slate-900 border border-slate-600 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
                                         value={formData.price}
                                         onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
                                     />
                                 </div>
                                 <div className="flex-1">
-                                    <label className="block text-sm font-medium">Stock</label>
+                                    <label className="block text-sm font-medium text-slate-300 mb-1">Stock</label>
                                     <input
                                         type="number"
                                         required
                                         min="0"
-                                        className="w-full border rounded p-2"
+                                        className="w-full bg-slate-900 border border-slate-600 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
                                         value={formData.stockQuantity}
                                         onChange={(e) => setFormData({ ...formData, stockQuantity: parseInt(e.target.value) })}
                                     />
                                 </div>
                             </div>
+
                             <div>
-                                <label className="block text-sm font-medium">Image URL</label>
+                                <label className="block text-sm font-medium text-slate-300 mb-1">Image URL</label>
                                 <input
                                     type="url"
                                     required
-                                    className="w-full border rounded p-2"
+                                    className="w-full bg-slate-900 border border-slate-600 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                                    placeholder="https://example.com/image.jpg"
                                     value={formData.imageUrl}
                                     onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
                                 />
                             </div>
-                            <div className="flex justify-end space-x-2 mt-4">
+
+                            <div className="flex justify-end gap-3 pt-4 border-t border-slate-700 mt-2">
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
-                                    className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+                                    className="px-5 py-2.5 rounded-lg bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white font-medium transition"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+                                    className="px-5 py-2.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-500 font-bold shadow-lg shadow-indigo-500/30 transition transform active:scale-95"
                                 >
-                                    Save
+                                    {editingGame ? "Save Changes" : "Create Game"}
                                 </button>
                             </div>
                         </form>
