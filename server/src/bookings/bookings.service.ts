@@ -88,4 +88,13 @@ export class BookingsService {
             order: { createdAt: 'DESC' }
         });
     }
+
+    async updateBookingStatus(id: number, status: BookingStatus): Promise<Booking> {
+        const booking = await this.bookingsRepository.findOne({ where: { id } });
+        if (!booking) {
+            throw new NotFoundException(`Booking with ID ${id} not found`);
+        }
+        booking.status = status;
+        return this.bookingsRepository.save(booking);
+    }
 }

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import GameManagement from "./GameManagement";
+import BookingManagement from "./BookingManagement";
 import GameList from "../components/GameList";
 import SnowBackground from "../components/SnowBackground";
 
@@ -9,6 +10,7 @@ function Dashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [showGameManagement, setShowGameManagement] = useState(false);
+  const [showBookingManagement, setShowBookingManagement] = useState(false);
 
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col relative">
@@ -85,6 +87,15 @@ function Dashboard() {
                   Manage Members
                 </button>
                 <button
+                  onClick={() => setShowBookingManagement(!showBookingManagement)}
+                  className={`flex-1 px-6 py-3 rounded-2xl font-bold transition transform hover:-translate-y-1 shadow-md border backdrop-blur-md ${showBookingManagement
+                    ? 'bg-emerald-500/20 border-emerald-400 text-emerald-100'
+                    : 'bg-emerald-600 text-white shadow-emerald-500/30'
+                    }`}
+                >
+                  {showBookingManagement ? "Close Bookings" : "Manage Bookings"}
+                </button>
+                <button
                   onClick={() => setShowGameManagement(!showGameManagement)}
                   className={`flex-1 px-6 py-3 rounded-2xl font-bold transition transform hover:-translate-y-1 shadow-md border backdrop-blur-md ${showGameManagement
                     ? 'bg-rose-500/20 border-rose-400 text-rose-100'
@@ -100,6 +111,13 @@ function Dashboard() {
               <div className="mt-10 animate-in fade-in slide-in-from-top-4 duration-500 bg-slate-900/50 rounded-2xl p-4 border border-white/10">
                 <GameManagement />
               </div>
+            )}
+
+            {showBookingManagement && (
+              <div className="mt-10 animate-in fade-in slide-in-from-top-4 duration-500 bg-slate-900/50 rounded-2xl p-4 border border-white/10">
+                <BookingManagement />
+              </div>
+            )}
             )}
           </section>
         )}
@@ -117,7 +135,7 @@ function Dashboard() {
       <footer className="py-10 text-center text-slate-500 text-sm border-t border-white/5 mt-20 relative z-10">
         <p>© 2025 StoreGame Marketplace. Happy Holidays! ❄️</p>
       </footer>
-    </div >
+    </div>
   );
 }
 

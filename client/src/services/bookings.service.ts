@@ -26,3 +26,26 @@ export const getMyBookings = async (token: string) => {
     if (!response.ok) throw new Error("Failed to fetch bookings");
     return response.json();
 };
+
+export const getAllBookings = async (token: string) => {
+    const response = await fetch(`${API_URL}/bookings`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    if (!response.ok) throw new Error("Failed to fetch all bookings");
+    return response.json();
+};
+
+export const updateBookingStatus = async (token: string, bookingId: number, status: string) => {
+    const response = await fetch(`${API_URL}/bookings/${bookingId}/status`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status }),
+    });
+    if (!response.ok) throw new Error("Failed to update booking status");
+    return response.json();
+};

@@ -1,6 +1,7 @@
-import { Controller, Post, Body, UseGuards, Request, Get } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request, Get, Patch, Param, ParseIntPipe } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
+import { UpdateBookingStatusDto } from './dto/update-booking-status.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -27,5 +28,15 @@ export class BookingsController {
     @Get()
     findAll() {
         return this.bookingsService.getAllBookings();
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(UserRole.ADMIN)
+    @Patch(':id/status')
+    updateStatus(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() updateBookingStatusDto: UpdateBookingStatusDto,
+    ) {
+        return this.bookingsService.updateBookingStatus(id, updateBookingStatusDto.status);
     }
 }
