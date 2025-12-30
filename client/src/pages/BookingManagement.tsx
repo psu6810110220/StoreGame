@@ -26,7 +26,7 @@ interface Booking {
     bookingItems: BookingItem[];
 }
 
-const BookingManagement: React.FC = () => {
+const BookingManagement: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const { token } = useAuth();
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
@@ -36,7 +36,7 @@ const BookingManagement: React.FC = () => {
         try {
             if (token) {
                 const data = await getAllBookings(token);
-                setBookings(data);
+                setBookings(Array.isArray(data) ? data : []);
             }
         } catch (error) {
             console.error("Failed to fetch all bookings", error);
@@ -99,14 +99,14 @@ const BookingManagement: React.FC = () => {
                         <tr key={booking.id} className="hover:bg-white/5 transition-colors">
                             <td className="p-4 font-mono text-slate-500">#{booking.id}</td>
                             <td className="p-4">
-                                <div className="font-bold text-white">{booking.user.username}</div>
-                                <div className="text-xs text-slate-500">{booking.user.phoneNumber}</div>
+                                <div className="font-bold text-white">{booking.user?.username || 'Unknown'}</div>
+                                <div className="text-xs text-slate-500">{booking.user?.phoneNumber || '-'}</div>
                             </td>
                             <td className="p-4">
                                 <ul className="space-y-1">
-                                    {booking.bookingItems.map((item, i) => (
+                                    {booking.bookingItems?.map((item, i) => (
                                         <li key={i} className="text-slate-300">
-                                            • {item.game.title} <span className="text-xs text-slate-500">x{item.quantity}</span>
+                                            • {item.game?.title || 'Unknown Game'} <span className="text-xs text-slate-500">x{item.quantity}</span>
                                         </li>
                                     ))}
                                 </ul>
@@ -150,7 +150,13 @@ const BookingManagement: React.FC = () => {
 
             {bookings.length === 0 && (
                 <div className="text-center py-12 text-slate-500">
-                    No bookings found.
+                    <p className="mb-4">No bookings found.</p>
+                    <button
+                        onClick={onClose}
+                        className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-bold transition shadow-lg border border-white/10"
+                    >
+                        Close
+                    </button>
                 </div>
             )}
         </div>

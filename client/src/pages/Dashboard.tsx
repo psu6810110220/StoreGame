@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import GameManagement from "./GameManagement";
 import BookingManagement from "./BookingManagement";
+import UserManagement from "./UserManagement";
 import GameList from "../components/GameList";
 import SnowBackground from "../components/SnowBackground";
 
@@ -11,6 +12,7 @@ function Dashboard() {
   const navigate = useNavigate();
   const [showGameManagement, setShowGameManagement] = useState(false);
   const [showBookingManagement, setShowBookingManagement] = useState(false);
+  const [showUserManagement, setShowUserManagement] = useState(false);
 
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col relative">
@@ -83,8 +85,14 @@ function Dashboard() {
               </div>
 
               <div className="flex gap-4">
-                <button className="flex-1 px-6 py-3 bg-white/10 text-white rounded-2xl font-bold hover:bg-white/20 transition transform hover:-translate-y-1 shadow-md border border-white/10">
-                  Manage Members
+                <button
+                  onClick={() => setShowUserManagement(!showUserManagement)}
+                  className={`flex-1 px-6 py-3 rounded-2xl font-bold transition transform hover:-translate-y-1 shadow-md border backdrop-blur-md ${showUserManagement
+                      ? 'bg-purple-500/20 border-purple-400 text-purple-100'
+                      : 'bg-white/10 text-white hover:bg-white/20 border-white/10'
+                    }`}
+                >
+                  {showUserManagement ? "Close Members" : "Manage Members"}
                 </button>
                 <button
                   onClick={() => setShowBookingManagement(!showBookingManagement)}
@@ -115,7 +123,13 @@ function Dashboard() {
 
             {showBookingManagement && (
               <div className="mt-10 animate-in fade-in slide-in-from-top-4 duration-500 bg-slate-900/50 rounded-2xl p-4 border border-white/10">
-                <BookingManagement />
+                <BookingManagement onClose={() => setShowBookingManagement(false)} />
+              </div>
+            )}
+
+            {showUserManagement && (
+              <div className="mt-10 animate-in fade-in slide-in-from-top-4 duration-500 bg-slate-900/50 rounded-2xl p-4 border border-white/10">
+                <UserManagement />
               </div>
             )}
 

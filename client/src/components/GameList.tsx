@@ -23,7 +23,7 @@ const GameList: React.FC = () => {
             try {
                 if (token) {
                     const data = await getGames(token);
-                    setGames(data);
+                    setGames(Array.isArray(data) ? data : []);
                 }
             } catch (error) {
                 console.error("Failed to fetch games", error);

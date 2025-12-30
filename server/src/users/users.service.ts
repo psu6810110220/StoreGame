@@ -62,6 +62,16 @@ export class UsersService implements OnModuleInit {
         return this.usersRepository.save(newUser);
     }
 
+    async findAll(): Promise<User[]> {
+        return this.usersRepository.find({
+            select: ['id', 'username', 'email', 'role', 'firstName', 'lastName'] // Exclude password
+        });
+    }
+
+    async remove(id: number): Promise<void> {
+        await this.usersRepository.delete(id);
+    }
+
     async findOneByUsername(username: string): Promise<User | null> {
         const user = await this.usersRepository.findOne({ where: { username } });
 
