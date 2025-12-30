@@ -1,9 +1,10 @@
-import React, { useState } from 'react'; // <--- แก้ตรงนี้ครับ: เพิ่ม React เข้ามา
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import SnowBackground from '../components/SnowBackground';
 
 function Register() {
   const navigate = useNavigate();
-  // สร้างตัวแปรเก็บข้อมูลฟอร์ม
+  // State for form data
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -11,7 +12,9 @@ function Register() {
     phoneNumber: ''
   });
 
-  // ฟังก์ชันคอยอัปเดตค่าเมื่อพิมพ์ในช่อง input
+  // State for custom notification
+  const [notification, setNotification] = useState<{ show: boolean; message: string; type: 'success' | 'error' } | null>(null);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -19,14 +22,11 @@ function Register() {
     });
   };
 
-  // ฟังก์ชันเมื่อกดปุ่ม "Create Account"
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // ป้องกันหน้าเว็บรีเฟรชเอง
+    e.preventDefault();
+    setNotification(null);
 
     try {
-      console.log("กำลังส่งข้อมูล:", formData);
-
-      // ยิงไปที่ Backend (Port 3000)
       const response = await fetch('http://localhost:3000/auth/register', {
         method: 'POST',
         headers: {
@@ -36,88 +36,112 @@ function Register() {
       });
 
       if (response.ok) {
-        alert("สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ");
-        navigate('/login'); // เด้งไปหน้า Login ทันที
+        setNotification({ show: true, message: 'Account created successfully! Redirecting...', type: 'success' });
+        setTimeout(() => {
+          navigate('/login');
+        }, 1500);
       } else {
-        // กรณี Error เช่น ชื่อซ้ำ
         const errorData = await response.json();
-        alert(`สมัครไม่ผ่าน: ${errorData.message || 'เกิดข้อผิดพลาด'}`);
+        setNotification({ show: true, message: `Registration failed: ${errorData.message || 'Unknown error'}`, type: 'error' });
       }
 
     } catch (error) {
       console.error("Connection Error:", error);
-      alert("เชื่อมต่อ Server ไม่ได้ (ตรวจสอบว่ารัน Backend หรือยัง)");
+      setNotification({ show: true, message: "Cannot connect to server.", type: 'error' });
     }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Register</h2>
+    <div className="flex min-h-screen items-center justify-center bg-slate-900 p-4 relative overflow-hidden">
+      <SnowBackground />
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">Username</label>
+      <div className="w-full max-w-md space-y-8 rounded-3xl bg-slate-800/60 backdrop-blur-xl border border-white/10 p-8 shadow-2xl relative z-10 animate-in fade-in zoom-in-95 duration-500">
+
+        <div className="text-center">
+          <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">
+            Join the Fun!
+          </h2>
+          <p className="mt-3 text-sm text-slate-400">
+            Create your account to start booking games.
+          </p>
+        </div>
+
+        {/* Custom Notification Alert */}
+        {notification && (
+          <div className={`p-4 rounded-xl text-sm font-bold flex items-center gap-3 shadow-lg animate-in slide-in-from-top-2 ${notification.type === 'success'
+              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+              : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+            }`}>
+            <span>{notification.type === 'success' ? '✅' : '⚠️'}</span>
+            {notification.message}
+          </div>
+        )}
+
+        <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
+          <div>
+            <label className="block text-sm font-bold text-slate-300 mb-1">Username</label>
             <input
               type="text"
               name="username"
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-              placeholder="Enter username"
+              className="block w-full px-4 py-3 bg-slate-900/50 border border-slate-600 placeholder-slate-500 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+              placeholder="Choose a username"
               onChange={handleChange}
               required
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">Password</label>
+          <div>
+            <label className="block text-sm font-bold text-slate-300 mb-1">Password</label>
             <input
               type="password"
               name="password"
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-              placeholder="Enter password"
+              className="block w-full px-4 py-3 bg-slate-900/50 border border-slate-600 placeholder-slate-500 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+              placeholder="Create a strong password"
               onChange={handleChange}
               required
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
+          <div>
+            <label className="block text-sm font-bold text-slate-300 mb-1">Email</label>
             <input
               type="email"
               name="email"
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+              className="block w-full px-4 py-3 bg-slate-900/50 border border-slate-600 placeholder-slate-500 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
               placeholder="example@mail.com"
               onChange={handleChange}
               required
             />
           </div>
 
-          <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2">Phone Number</label>
+          <div>
+            <label className="block text-sm font-bold text-slate-300 mb-1">Phone Number</label>
             <input
               type="text"
               name="phoneNumber"
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+              className="block w-full px-4 py-3 bg-slate-900/50 border border-slate-600 placeholder-slate-500 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
               placeholder="08xxxxxxxx"
               onChange={handleChange}
               required
             />
           </div>
 
-          <button
-            type="submit"
-            className="w-full bg-green-600 text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition duration-200"
-          >
-            Create Account
-          </button>
+          <div className="pt-4">
+            <button
+              type="submit"
+              className="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-lg shadow-emerald-500/30 transition-all duration-200 transform hover:scale-[1.02] hover:shadow-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+            >
+              Create Account ✨
+            </button>
+          </div>
         </form>
 
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Already have an account?{' '}
-          <Link to="/login" className="text-blue-500 hover:text-blue-700 font-bold">
+        <div className="text-sm text-center">
+          <span className="text-slate-500">Already have an account? </span>
+          <Link to="/login" className="font-bold text-emerald-400 hover:text-emerald-300 transition-colors">
             Login here
           </Link>
-        </p>
+        </div>
       </div>
     </div>
   );

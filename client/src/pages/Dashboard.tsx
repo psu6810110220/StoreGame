@@ -14,12 +14,26 @@ function Dashboard() {
   const [showBookingManagement, setShowBookingManagement] = useState(false);
   const [showUserManagement, setShowUserManagement] = useState(false);
 
+  // Key to force reset GameList (return to page 1)
+  const [gameListKey, setGameListKey] = useState(0);
+
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col relative">
       <SnowBackground />
       {/* 🌐 Navbar */}
       <nav className="bg-slate-800/80 backdrop-blur-md shadow-sm border-b border-white/10 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
-        <div className="flex items-center gap-2">
+        <div
+          className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => {
+            navigate('/dashboard');
+            // Force reset GameList to page 1 by incrementing key
+            setGameListKey(prev => prev + 1);
+            // Optionally close admin panels if open, to truly "reset" view
+            setShowGameManagement(false);
+            setShowBookingManagement(false);
+            setShowUserManagement(false);
+          }}
+        >
           <div className="bg-indigo-500 p-2 rounded-lg text-white font-bold shadow-lg shadow-indigo-500/50">SG</div>
           <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">
             StoreGame
@@ -142,7 +156,8 @@ function Dashboard() {
             <h3 className="text-2xl font-bold text-white">Available Games</h3>
             <div className="h-px flex-1 bg-white/10"></div>
           </div>
-          <GameList />
+          {/* Key forces GameList to re-mount and reset to page 1 */}
+          <GameList key={gameListKey} />
         </section>
       </main>
 
