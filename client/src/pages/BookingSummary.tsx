@@ -6,7 +6,7 @@ import SnowBackground from '../components/SnowBackground';
 
 //String Configuration for PromptPay
 // 👇👇👇 CHANGE YOUR PROMPTPAY NUMBER HERE 👇👇👇
-const PROMPTPAY_NUMBER = "0812345678"; // e.g., "0812345678" or Tax ID "1234567890123"
+const PROMPTPAY_NUMBER = "1801301340741"; // e.g., "1801301340741" or Tax ID "1234567890123"
 const ACCOUNT_NAME = "MR SORNTHEP RODBUATONG";
 // 👆👆👆 CHANGE YOUR ACCOUNT NAME HERE 👆👆👆
 
@@ -184,20 +184,15 @@ const BookingSummary: React.FC = () => {
                                     <p className="text-slate-500 text-xs mt-1">Scan to pay exact deposit amount</p>
                                 </div>
 
-                                {/* Static QR from User Image with CROP */}
-                                <div className="w-64 h-72 overflow-hidden border-4 border-slate-100 rounded-3xl relative flex items-center justify-center bg-white shadow-inner">
+                                {/* Dynamic QR Code (Locks the Amount) */}
+                                <div className="w-64 h-64 overflow-hidden border-4 border-slate-100 rounded-3xl relative flex items-center justify-center bg-white shadow-inner p-2">
                                     <img
-                                        src="/my-qr.png"
-                                        alt="Scan using your Banking App"
-                                        // Scale 1.4 and move up to center the QR part
-                                        className="w-full h-full object-cover scale-[1.4] -translate-y-4"
+                                        src={`https://promptpay.io/${PROMPTPAY_NUMBER}/${depositAmount}`}
+                                        alt="PromptPay QR"
+                                        className="w-full h-full object-contain mix-blend-multiply"
                                         onError={(e) => {
-                                            const target = e.target as HTMLImageElement;
-                                            // Prevent infinite loop if fallback fails too
-                                            if (!target.src.includes('promptpay.io')) {
-                                                target.src = `https://promptpay.io/${PROMPTPAY_NUMBER}/${depositAmount}.png`;
-                                                target.className = "w-full h-full object-contain"; // Reset scale for fallback
-                                            }
+                                            // Fallback to static image if API fails
+                                            (e.target as HTMLImageElement).src = '/my-qr.jpg';
                                         }}
                                     />
                                 </div>
