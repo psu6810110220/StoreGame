@@ -10,6 +10,7 @@ export default function Login() {
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(true);
 
   // Custom Notification State
   const [notification, setNotification] = useState<{ show: boolean; message: string; type: 'success' | 'error' } | null>(null);
@@ -27,7 +28,7 @@ export default function Login() {
       });
 
       if (response.data.access_token) {
-        login(response.data.access_token, response.data.user);
+        login(response.data.access_token, response.data.user, rememberMe);
 
         // Show success notification
         setNotification({ show: true, message: 'Welcome! 🎆', type: 'success' });
@@ -106,6 +107,20 @@ export default function Login() {
             </div>
           </div>
 
+          <div className="flex items-center">
+            <input
+              id="remember-me"
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="h-4 w-4 text-rose-500 hover:text-rose-400 focus:ring-rose-500 bg-slate-900 border-slate-600 rounded cursor-pointer transition-colors"
+            />
+            <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-300 font-bold cursor-pointer select-none">
+              Remember me
+            </label>
+          </div>
+
+
           <div>
             <button
               type="submit"
@@ -123,7 +138,7 @@ export default function Login() {
           </a>
         </div>
 
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }

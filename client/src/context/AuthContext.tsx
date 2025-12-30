@@ -5,15 +5,16 @@ import { useNavigate } from 'react-router-dom';
 interface User {
   id: number;
   username: string;
-  role?: string; 
+  role?: string;
 }
 
 // กำหนดหน้าตาของ Context
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (token: string, user: User) => void; // ✅ เปลี่ยนจาก signIn เป็น login ที่รับค่าตรงๆ
+  login: (token: string, user: User, remember?: boolean) => void; // ✅ Updated to support Remember Me
   logout: () => void;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -24,9 +25,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
   // ✅ 1. ดึงข้อมูลจาก LocalStorage เมื่อโหลดหน้าเว็บ (เพื่อให้กด Refresh แล้วไม่หลุด)
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const savedToken = localStorage.getItem('token');
-    const savedUser = localStorage.getItem('user');
+    // Check LocalStorage first, then SessionStorage
+    const savedToken = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const savedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
 
     if (savedToken) {
       setToken(savedToken);
@@ -38,26 +42,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(parsedUser);
       } catch (e) {
         console.error("Failed to parse user data", e);
-        localStorage.removeItem('user'); // ล้างค่าที่เสียออก
+        // Clear both just in case
+        localStorage.removeItem('user');
+        sessionStorage.removeItem('user');
       }
     }
+    setLoading(false);
   }, []);
 
-  // ✅ 2. ฟังก์ชัน Login: มีหน้าที่แค่รับค่ามาบันทึก State และ LocalStorage
-  // (API ถูกยิงมาจากหน้า Login.tsx แล้ว)
-  const login = (accessToken: string, userData: User) => {
+  // ✅ 2. ฟังก์ชัน Login
+  const login = (accessToken: string, userData: User, remember: boolean = true) => {
     // อัปเดต State
     setToken(accessToken);
     setUser(userData);
 
-    // อัปเดต LocalStorage
-    localStorage.setItem('token', accessToken);
-    localStorage.setItem('user', JSON.stringify(userData));
+    const storage = remember ? localStorage : sessionStorage;
 
-    console.log("✅ AuthContext Updated: Logged in as", userData.role);
-    
+    // Clear the OTHER storage to avoid conflicts
+    const otherStorage = remember ? sessionStorage : localStorage;
+    otherStorage.removeItem('token');
+    otherStorage.removeItem('user');
+
+    // อัปเดต Storage ที่เลือก
+    storage.setItem('token', accessToken);
+    storage.setItem('user', JSON.stringify(userData));
+
+    console.log("✅ AuthContext Updated: Logged in as", userData.role, "| Remember:", remember);
+
     // หมายเหตุ: การ navigate('/dashboard') ทำที่หน้า Login.tsx แล้ว
-    // แต่ถ้าอยากให้ชัวร์จะใส่ navigate('/dashboard') ตรงนี้เพิ่มก็ได้ครับ
   };
 
   // ✅ 3. ฟังก์ชัน Logout
@@ -66,11 +78,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
     navigate('/login'); // เด้งกลับไปหน้า Login
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, token, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

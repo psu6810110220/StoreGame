@@ -11,7 +11,12 @@ import MyBookings from "./pages/MyBookings";
 
 // แก้ตรง JSX.Element เป็น React.ReactNode
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { token } = useAuth();
+  const { token, loading } = useAuth();
+
+  if (loading) {
+    return <div className="flex h-screen items-center justify-center bg-slate-900 text-white text-xl animate-pulse">Loading... ⏳</div>;
+  }
+
   if (!token) {
     return <Navigate to="/login" replace />;
   }
