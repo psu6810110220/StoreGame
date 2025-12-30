@@ -21,6 +21,9 @@ export class Game {
     @Column({ name: 'image_url' })
     imageUrl: string;
 
+    @Column('simple-array', { nullable: true })
+    categories: string[];
+
     @Column({ name: 'release_date', nullable: true })
     releaseDate: Date;
 

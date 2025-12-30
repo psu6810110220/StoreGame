@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsNumber, IsUrl, IsOptional, Min, IsDateString } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, IsOptional, Min, IsDateString, IsArray } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateGameDto {
@@ -25,6 +25,11 @@ export class CreateGameDto {
     @IsNotEmpty()
     @IsString()
     imageUrl: string;
+
+    @IsOptional()
+    @IsArray()
+    @IsString({ each: true })
+    categories: string[];
 
     @IsOptional()
     @IsDateString()
