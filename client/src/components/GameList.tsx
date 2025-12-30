@@ -131,7 +131,9 @@ const GameList: React.FC = () => {
                 <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {currentGames.map((game) => (
-                            <div key={game.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-gray-100 flex flex-col group/card">
+                            <div key={game.id} className="bg-slate-800/40 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:shadow-indigo-500/20 transition-all duration-300 border border-white/10 hover:border-indigo-500/50 ring-1 ring-white/5 hover:ring-indigo-500/30 flex flex-col group/card relative">
+                                {/* Seasonal Decoration: Small snowflake on card */}
+                                <div className="absolute top-2 right-2 text-white/10 text-2xl z-10 select-none pointer-events-none group-hover/card:text-white/30 transition-colors">❄</div>
                                 <div className="h-48 overflow-hidden relative group">
                                     <img
                                         src={game.imageUrl}
@@ -157,12 +159,12 @@ const GameList: React.FC = () => {
 
                                 <div className="p-5 flex-1 flex flex-col">
                                     <div className="flex justify-between items-start mb-2 gap-2">
-                                        <h3 className="text-lg font-bold text-gray-900 line-clamp-1" title={game.title}>
+                                        <h3 className="text-lg font-bold text-white line-clamp-1 group-hover/card:text-indigo-300 transition-colors" title={game.title}>
                                             {game.title}
                                         </h3>
                                         {/* Display First Category as Tag */}
                                         {game.categories && game.categories.length > 0 && (
-                                            <span className="bg-purple-100 text-purple-800 text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wide whitespace-nowrap">
+                                            <span className="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wide whitespace-nowrap">
                                                 {game.categories[0]}
                                             </span>
                                         )}
@@ -171,25 +173,25 @@ const GameList: React.FC = () => {
                                     {/* Additional Categories if any */}
                                     <div className="flex flex-wrap gap-1 mb-3">
                                         {game.categories?.slice(1).map(cat => (
-                                            <span key={cat} className="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                                            <span key={cat} className="text-[10px] text-slate-400 bg-slate-700/50 px-1.5 py-0.5 rounded border border-slate-600">
                                                 #{cat}
                                             </span>
                                         ))}
                                     </div>
 
-                                    <p className="text-gray-600 text-sm mb-4 line-clamp-2" title={game.description}>
+                                    <p className="text-slate-400 text-sm mb-4 line-clamp-2" title={game.description}>
                                         {game.description}
                                     </p>
 
-                                    <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
+                                    <div className="mt-auto pt-4 border-t border-white/10 flex items-center justify-between">
                                         <div className="flex flex-col">
-                                            <span className="text-xs text-gray-500">Price</span>
-                                            <span className="text-xl font-bold text-green-600">฿{game.price.toLocaleString()}</span>
+                                            <span className="text-xs text-slate-500">Price</span>
+                                            <span className="text-xl font-bold text-emerald-400">฿{game.price.toLocaleString()}</span>
                                         </div>
 
                                         <div className="flex flex-col items-end">
-                                            <span className="text-xs text-gray-500">Stock</span>
-                                            <span className={`font-medium ${game.stockQuantity < 5 ? 'text-red-500' : 'text-gray-700'}`}>
+                                            <span className="text-xs text-slate-500">Stock</span>
+                                            <span className={`font-bold ${game.stockQuantity < 5 ? 'text-rose-400' : 'text-slate-300'}`}>
                                                 {game.stockQuantity} items
                                             </span>
                                         </div>
@@ -198,12 +200,12 @@ const GameList: React.FC = () => {
                                     <button
                                         disabled={game.stockQuantity === 0}
                                         onClick={() => navigate('/booking-summary', { state: { game } })}
-                                        className={`mt-4 w-full py-2 rounded-lg font-medium transition-colors ${game.stockQuantity > 0
-                                            ? 'bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800 shadow-lg shadow-indigo-500/30'
-                                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                        className={`mt-4 w-full py-2.5 rounded-xl font-bold transition-all shadow-lg ${game.stockQuantity > 0
+                                            ? 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-indigo-500/30 transform hover:scale-[1.02]'
+                                            : 'bg-slate-700 text-slate-500 cursor-not-allowed'
                                             }`}
                                     >
-                                        {game.stockQuantity > 0 ? 'Book This Game' : 'Sold Out'}
+                                        {game.stockQuantity > 0 ? 'Book This Game ✨' : 'Sold Out'}
                                     </button>
                                 </div>
                             </div>
@@ -212,7 +214,7 @@ const GameList: React.FC = () => {
 
                     {/* Pagination Controls - Highlighted Visibility */}
                     {totalPages > 1 && (
-                        <div className="flex flex-col items-center gap-4 mt-12 bg-slate-900/90 backdrop-blur-xl p-8 rounded-3xl border-2 border-indigo-500/20 shadow-2xl shadow-indigo-500/10">
+                        <div className="flex flex-col items-center gap-4 mt-12 bg-slate-800/80 backdrop-blur-xl p-8 rounded-3xl border-2 border-indigo-500/20 shadow-2xl shadow-indigo-500/10">
                             <span className="text-slate-400 text-sm font-medium uppercase tracking-widest">Navigate Pages</span>
                             <div className="flex items-center gap-3">
                                 <button
