@@ -20,6 +20,10 @@ interface Booking {
     bookingDate: string;
     pickupDate: string;
     status: string;
+    totalAmount: number;
+    depositAmount: number;
+    paymentStatus: string;
+    slipUrl: string;
     bookingItems: BookingItem[];
 }
 
@@ -34,7 +38,13 @@ const MyBookings: React.FC = () => {
             try {
                 if (token) {
                     const data = await getMyBookings(token);
-                    setBookings(data);
+                    // Handle potential decimal strings from backend
+                    const sanitizedData = data.map((b: any) => ({
+                        ...b,
+                        totalAmount: parseFloat(b.totalAmount),
+                        depositAmount: parseFloat(b.depositAmount)
+                    }));
+                    setBookings(sanitizedData);
                 }
             } catch (error) {
                 console.error("Failed to fetch bookings", error);
@@ -51,7 +61,16 @@ const MyBookings: React.FC = () => {
             case 'CONFIRMED': return 'bg-green-500/20 text-green-300 border-green-500/30';
             case 'PENDING': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30';
             case 'CANCELLED': return 'bg-red-500/20 text-red-300 border-red-500/30';
+            case 'COMPLETED': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
             default: return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
+        }
+    };
+
+    const getPaymentStatusColor = (status: string) => {
+        switch (status) {
+            case 'PAID': return 'text-emerald-400';
+            case 'REJECTED': return 'text-red-400';
+            default: return 'text-yellow-400';
         }
     };
 
@@ -127,40 +146,61 @@ const MyBookings: React.FC = () => {
                                 </div>
 
                                 <div className="p-6">
-                                    <div className="space-y-4">
-                                        {booking.bookingItems.map((item, index) => (
-                                            <div key={index} className="flex gap-4 items-center">
-                                                <div className="h-16 w-16 bg-slate-700 rounded-lg overflow-hidden shrink-0 border border-white/10">
-                                                    <img
-                                                        src={item.game.imageUrl}
-                                                        alt={item.game.title}
-                                                        className="h-full w-full object-cover"
-                                                        onError={(e) => {
-                                                            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/100?text=Game';
-                                                        }}
-                                                    />
-                                                </div>
-                                                <div className="flex-1">
-                                                    <h4 className="font-bold text-lg text-white">{item.game.title}</h4>
-                                                    <div className="flex items-center gap-2 mt-1">
-                                                        <span className="text-green-400 font-bold">฿{item.game.price.toLocaleString()}</span>
-                                                        <span className="text-slate-500 text-xs">•</span>
-                                                        <span className="text-slate-400 text-sm">Qty: {item.quantity}</span>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        {/* Left: Items */}
+                                        <div className="md:col-span-2 space-y-4">
+                                            {booking.bookingItems.map((item, index) => (
+                                                <div key={index} className="flex gap-4 items-center bg-white/5 p-3 rounded-xl border border-white/5">
+                                                    <div className="h-16 w-16 bg-slate-700 rounded-lg overflow-hidden shrink-0">
+                                                        <img
+                                                            src={item.game.imageUrl}
+                                                            alt={item.game.title}
+                                                            className="h-full w-full object-cover"
+                                                            onError={(e) => {
+                                                                (e.target as HTMLImageElement).src = 'https://via.placeholder.com/100?text=Game';
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <h4 className="font-bold text-white">{item.game.title}</h4>
+                                                        <div className="flex items-center gap-2 mt-1">
+                                                            <span className="text-slate-400 text-sm">฿{item.game.price.toLocaleString()} x {item.quantity}</span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div className="text-right">
-                                                    <p className="font-bold text-white">฿{(item.game.price * item.quantity).toLocaleString()}</p>
+                                            ))}
+                                        </div>
+
+                                        {/* Right: Payment Info */}
+                                        <div className="bg-slate-900/50 p-4 rounded-xl border border-white/5 flex flex-col justify-between">
+                                            <div>
+                                                <h5 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Payment Info</h5>
+                                                <div className="flex justify-between mb-2">
+                                                    <span className="text-slate-400 text-sm">Total:</span>
+                                                    <span className="text-white font-bold text-sm">฿{booking.totalAmount.toLocaleString()}</span>
+                                                </div>
+                                                <div className="flex justify-between mb-4">
+                                                    <span className="text-slate-400 text-sm">Deposit (10%):</span>
+                                                    <span className="text-emerald-400 font-black">฿{booking.depositAmount.toLocaleString()}</span>
+                                                </div>
+                                                <div className="pt-3 border-t border-white/5 flex justify-between items-center">
+                                                    <span className="text-slate-400 text-xs text-right">Payment Status:</span>
+                                                    <span className={`text-sm font-black uppercase ${getPaymentStatusColor(booking.paymentStatus)}`}>
+                                                        {booking.paymentStatus}
+                                                    </span>
                                                 </div>
                                             </div>
-                                        ))}
-                                    </div>
 
-                                    <div className="mt-6 pt-4 border-t border-white/5 flex justify-end">
-                                        <div className="text-right">
-                                            <p className="text-slate-400 text-sm">Total Amount</p>
-                                            <p className="text-2xl font-extrabold text-white">
-                                                ฿{booking.bookingItems.reduce((sum, item) => sum + (item.game.price * item.quantity), 0).toLocaleString()}
-                                            </p>
+                                            {booking.slipUrl && (
+                                                <a
+                                                    href={booking.slipUrl}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className="mt-4 block text-center py-2 bg-indigo-500/10 text-indigo-400 text-xs font-bold rounded-lg border border-indigo-500/20 hover:bg-indigo-500/20 transition-all"
+                                                >
+                                                    View Transfer Slip 📄
+                                                </a>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

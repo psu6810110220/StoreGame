@@ -49,3 +49,16 @@ export const updateBookingStatus = async (token: string, bookingId: number, stat
     if (!response.ok) throw new Error("Failed to update booking status");
     return response.json();
 };
+
+export const updatePaymentStatus = async (token: string, bookingId: number, status: string) => {
+    const response = await fetch(`${API_URL}/bookings/${bookingId}/payment-status`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status }),
+    });
+    if (!response.ok) throw new Error("Failed to update payment status");
+    return response.json();
+};

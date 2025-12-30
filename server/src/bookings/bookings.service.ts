@@ -22,15 +22,15 @@ export class BookingsService {
         await queryRunner.startTransaction();
 
         try {
-            const { pickupDate, items } = createBookingDto;
+            const { pickupDate, items, slipUrl } = createBookingDto as any; // Cast as any to handle new fields for now
             const bookingItems: BookingItem[] = [];
-            let totalAmount = 0; // Optional: Calculate total amount if needed
+            let totalAmount = 0;
 
             for (const itemDto of items) {
                 // Find game with stock check inside the transaction
                 const game = await queryRunner.manager.findOne(Game, {
                     where: { id: itemDto.gameId },
-                    lock: { mode: 'pessimistic_write' } // Lock the row to prevent race conditions
+                    lock: { mode: 'pessimistic_write' }
                 });
 
                 if (!game) {
@@ -50,6 +50,9 @@ export class BookingsService {
                 bookingItem.game = game;
                 bookingItem.quantity = itemDto.quantity;
                 bookingItems.push(bookingItem);
+
+                // Calculate total
+                totalAmount += (game.price * itemDto.quantity);
             }
 
             // Create Booking
@@ -59,6 +62,11 @@ export class BookingsService {
             booking.pickupDate = new Date(pickupDate);
             booking.status = BookingStatus.PENDING;
             booking.bookingItems = bookingItems;
+
+            // Set Payment Related Fields
+            booking.totalAmount = totalAmount;
+            booking.depositAmount = totalAmount * 0.10; // 10% deposit
+            booking.slipUrl = slipUrl || null;
 
             // Save Booking (Cascades to BookingItems)
             const savedBooking = await queryRunner.manager.save(Booking, booking);
@@ -95,6 +103,20 @@ export class BookingsService {
             throw new NotFoundException(`Booking with ID ${id} not found`);
         }
         booking.status = status;
+        return this.bookingsRepository.save(booking);
+    }
+
+    // New method for Payment Update
+    async updatePaymentStatus(id: number, status: any): Promise<Booking> {
+        const booking = await this.bookingsRepository.findOne({ where: { id } });
+        if (!booking) {
+            throw new NotFoundException(`Booking with ID ${id} not found`);
+        }
+        booking.paymentStatus = status;
+        // If payment is PAID, auto-confirm booking
+        if (status === 'PAID') {
+            booking.status = BookingStatus.CONFIRMED;
+        }
         return this.bookingsRepository.save(booking);
     }
 }

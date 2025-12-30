@@ -1,4 +1,4 @@
-import { IsArray, IsDateString, IsInt, IsNotEmpty, ValidateNested, Min } from 'class-validator';
+import { IsArray, IsDateString, IsInt, IsNotEmpty, ValidateNested, Min, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class BookingItemDto {
@@ -22,4 +22,8 @@ export class CreateBookingDto {
     @ValidateNested({ each: true })
     @Type(() => BookingItemDto)
     items: BookingItemDto[];
+
+    @IsOptional()
+    @IsString()
+    slipUrl?: string;
 }

@@ -39,4 +39,15 @@ export class BookingsController {
     ) {
         return this.bookingsService.updateBookingStatus(id, updateBookingStatusDto.status);
     }
+
+    // New Endpoint for updating Payment Status
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(UserRole.ADMIN)
+    @Patch(':id/payment-status')
+    updatePaymentStatus(
+        @Param('id', ParseIntPipe) id: number,
+        @Body('status') status: string,
+    ) {
+        return this.bookingsService.updatePaymentStatus(id, status);
+    }
 }

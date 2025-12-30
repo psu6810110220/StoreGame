@@ -9,6 +9,12 @@ export enum BookingStatus {
     CANCELLED = 'CANCELLED',
 }
 
+export enum PaymentStatus {
+    PENDING = 'PENDING',
+    PAID = 'PAID',
+    REJECTED = 'REJECTED',
+}
+
 @Entity('bookings')
 export class Booking {
     @PrimaryGeneratedColumn()
@@ -27,14 +33,30 @@ export class Booking {
     })
     status: BookingStatus;
 
+    @Column({ name: 'total_amount', type: 'decimal', precision: 10, scale: 2, default: 0 })
+    totalAmount: number;
+
+    @Column({ name: 'deposit_amount', type: 'decimal', precision: 10, scale: 2, default: 0 })
+    depositAmount: number;
+
+    @Column({ name: 'slip_url', type: 'varchar', nullable: true })
+    slipUrl: string;
+
+    @Column({
+        name: 'payment_status',
+        type: 'enum',
+        enum: PaymentStatus,
+        default: PaymentStatus.PENDING,
+    })
+    paymentStatus: PaymentStatus;
+
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;
 
     @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date;
 
-    // 👇 แก้เหลือแค่ความสัมพันธ์ทางเดียว
-    @ManyToOne(() => User) 
+    @ManyToOne(() => User)
     @JoinColumn({ name: 'user_id' })
     user: User;
 
