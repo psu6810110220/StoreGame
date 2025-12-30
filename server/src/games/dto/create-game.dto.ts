@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsString, IsNumber, IsUrl, IsOptional, Min, IsDateString } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateGameDto {
     @IsNotEmpty()
@@ -11,11 +12,13 @@ export class CreateGameDto {
 
     @IsNotEmpty()
     @IsNumber()
+    @Type(() => Number)
     @Min(0)
     price: number;
 
     @IsNotEmpty()
     @IsNumber()
+    @Type(() => Number)
     @Min(0)
     stockQuantity: number;
 

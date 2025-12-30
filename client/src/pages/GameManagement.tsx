@@ -62,7 +62,7 @@ const GameManagement: React.FC = () => {
             });
             fetchGames();
         } catch (error) {
-            alert("Error saving game");
+            alert("Error saving game: " + (error as any).message);
             console.error(error);
         }
     };

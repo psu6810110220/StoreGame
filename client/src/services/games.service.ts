@@ -19,7 +19,10 @@ export const createGame = async (token: string, gameData: any) => {
         },
         body: JSON.stringify(gameData),
     });
-    if (!response.ok) throw new Error("Failed to create game");
+    if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(Array.isArray(err.message) ? err.message.join(', ') : err.message || `Failed to create game (${response.status})`);
+    }
     return response.json();
 };
 
@@ -32,7 +35,10 @@ export const updateGame = async (token: string, id: number, gameData: any) => {
         },
         body: JSON.stringify(gameData),
     });
-    if (!response.ok) throw new Error("Failed to update game");
+    if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(Array.isArray(err.message) ? err.message.join(', ') : err.message || `Failed to update game (${response.status})`);
+    }
     return response.json();
 };
 
