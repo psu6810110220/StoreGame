@@ -20,7 +20,7 @@ export class UpdateGameDto {
     stockQuantity?: number;
 
     @IsOptional()
-    @IsUrl()
+    @IsString()
     imageUrl?: string;
 
     @IsOptional()

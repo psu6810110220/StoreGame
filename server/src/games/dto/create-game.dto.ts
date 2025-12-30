@@ -20,7 +20,7 @@ export class CreateGameDto {
     stockQuantity: number;
 
     @IsNotEmpty()
-    @IsUrl()
+    @IsString()
     imageUrl: string;
 
     @IsOptional()

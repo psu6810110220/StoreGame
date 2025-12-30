@@ -118,7 +118,7 @@ function Dashboard() {
                 <BookingManagement />
               </div>
             )}
-            )}
+
           </section>
         )}
 
