@@ -1,48 +1,84 @@
 @import "tailwindcss";
 
 @layer utilities {
-  /* Custom Gradients & Utilities */
-  .text-gradient-store {
-    background: linear-gradient(to right, #818cf8, #c084fc);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
 
-  .text-gradient-welcome {
-    background: linear-gradient(to right, #f87171, #fb7185, #f472b6);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
+    /* Custom Gradients & Utilities */
+    .text-gradient-store {
+        background: linear-gradient(to right, #818cf8, #c084fc);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
 
-  .btn-gradient-primary {
-    background: linear-gradient(to right, #4f46e5, #9333ea);
-  }
-  .btn-gradient-primary:hover {
-    background: linear-gradient(to right, #6366f1, #a855f7);
-  }
+    .text-gradient-welcome {
+        background: linear-gradient(to right, #f87171, #fb7185, #f472b6);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
 
-  .btn-gradient-login {
-    background: linear-gradient(to right, #f43f5e, #db2777);
-  }
-  .btn-gradient-login:hover {
-    background: linear-gradient(to right, #fb7185, #ec4899);
-  }
+    .btn-gradient-primary {
+        background: linear-gradient(to right, #4f46e5, #9333ea);
+    }
 
-  .bg-gradient-admin {
-    background: linear-gradient(to bottom right, #312e81, #581c87);
-  }
+    .btn-gradient-primary:hover {
+        background: linear-gradient(to right, #6366f1, #a855f7);
+    }
 
-  .btn-page-active {
-    background: linear-gradient(to bottom right, #6366f1, #9333ea);
-  }
+    .btn-gradient-login {
+        background: linear-gradient(to right, #f43f5e, #db2777);
+    }
 
-  .z-modal-overlay {
-    z-index: 60;
-  }
+    .btn-gradient-login:hover {
+        background: linear-gradient(to right, #fb7185, #ec4899);
+    }
 
-  .flex-2 {
-    flex: 2;
-  }
+    .bg-gradient-admin {
+        background: linear-gradient(to bottom right, #312e81, #581c87);
+    }
+
+    .btn-page-active {
+        background: linear-gradient(to bottom right, #6366f1, #9333ea);
+    }
+
+    .z-modal-overlay {
+        z-index: 60;
+    }
+
+    .flex-2 {
+        flex: 2;
+    }
+
+    /* Booking Management Styles */
+    .table-head-sticky {
+        @apply bg-slate-800 text-slate-400 uppercase font-bold text-xs sticky top-0 z-10 shadow-md;
+    }
+
+    .badge-item {
+        @apply text-xs bg-slate-700 px-2 py-0.5 rounded border border-white/5;
+    }
+
+    .btn-view-slip {
+        @apply text-xs bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 px-3 py-1 rounded hover:bg-indigo-500 hover:text-white transition;
+    }
+
+    .btn-action-approve {
+        @apply bg-emerald-500 hover:bg-emerald-400 text-white p-1.5 rounded shadow-lg transition;
+    }
+
+    .btn-action-reject {
+        @apply bg-red-500 hover:bg-red-400 text-white p-1.5 rounded shadow-lg transition;
+    }
+
+    .badge-status-paid {
+        @apply px-2 py-1 rounded text-xs font-bold text-emerald-400 bg-emerald-400/10;
+    }
+
+    .badge-status-rejected {
+        @apply px-2 py-1 rounded text-xs font-bold text-red-400 bg-red-400/10;
+    }
+
+    .badge-status-pending {
+        @apply px-2 py-1 rounded text-xs font-bold text-yellow-400 bg-yellow-400/10;
+    }
 }

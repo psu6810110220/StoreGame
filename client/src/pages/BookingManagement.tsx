@@ -79,7 +79,7 @@ const BookingManagement: React.FC<BookingManagementProps> = ({ onClose }) => {
 
             <div className="overflow-x-auto rounded-xl border border-slate-700 max-h-[500px] overflow-y-auto">
                 <table className="w-full text-left text-sm text-slate-300">
-                    <thead className="bg-slate-800 text-slate-400 uppercase font-bold text-xs sticky top-0 z-10 shadow-md">
+                    <thead className="table-head-sticky">
                         <tr>
                             <th className="px-6 py-4">ID</th>
                             <th className="px-6 py-4">User</th>
@@ -119,7 +119,7 @@ const BookingManagement: React.FC<BookingManagementProps> = ({ onClose }) => {
                                     <div className="flex flex-col gap-1">
                                         {booking.bookingItems && booking.bookingItems.length > 0 ? (
                                             booking.bookingItems.map((item: any) => (
-                                                <span key={item.id} className="text-xs bg-slate-700 px-2 py-0.5 rounded border border-white/5">
+                                                <span key={item.id} className="badge-item">
                                                     {item.game?.title || 'Unknown Game'} (x{item.quantity})
                                                 </span>
                                             ))
@@ -134,7 +134,7 @@ const BookingManagement: React.FC<BookingManagementProps> = ({ onClose }) => {
                                     {booking.slipUrl ? (
                                         <button
                                             onClick={() => setSelectedSlip(booking.slipUrl)}
-                                            className="text-xs bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 px-3 py-1 rounded hover:bg-indigo-500 hover:text-white transition"
+                                            className="btn-view-slip"
                                         >
                                             View Slip 📄
                                         </button>
@@ -143,10 +143,10 @@ const BookingManagement: React.FC<BookingManagementProps> = ({ onClose }) => {
                                     )}
                                 </td>
                                 <td className="px-6 py-4">
-                                    <span className={`px-2 py-1 rounded text-xs font-bold ${booking.paymentStatus === 'PAID' ? 'text-emerald-400 bg-emerald-400/10' :
-                                        booking.paymentStatus === 'REJECTED' ? 'text-red-400 bg-red-400/10' :
-                                            'text-yellow-400 bg-yellow-400/10'
-                                        }`}>
+                                    <span className={booking.paymentStatus === 'PAID' ? 'badge-status-paid' :
+                                        booking.paymentStatus === 'REJECTED' ? 'badge-status-rejected' :
+                                            'badge-status-pending'
+                                    }>
                                         {booking.paymentStatus || 'PENDING'}
                                     </span>
                                 </td>
@@ -167,14 +167,14 @@ const BookingManagement: React.FC<BookingManagementProps> = ({ onClose }) => {
                                         <div className="flex gap-2 justify-end">
                                             <button
                                                 onClick={() => handlePaymentAction(booking.id, 'APPROVE')}
-                                                className="bg-emerald-500 hover:bg-emerald-400 text-white p-1.5 rounded shadow-lg transition"
+                                                className="btn-action-approve"
                                                 title="Approve Payment"
                                             >
                                                 ✅
                                             </button>
                                             <button
                                                 onClick={() => handlePaymentAction(booking.id, 'REJECT')}
-                                                className="bg-red-500 hover:bg-red-400 text-white p-1.5 rounded shadow-lg transition"
+                                                className="btn-action-reject"
                                                 title="Reject Payment"
                                             >
                                                 ❌
