@@ -190,7 +190,7 @@ const BookingManagement: React.FC<BookingManagementProps> = ({ onClose }) => {
 
             {/* Slip Preview Modal */}
             {selectedSlip && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm" onClick={() => setSelectedSlip(null)}>
+                <div className="fixed inset-0 z-modal-overlay flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm" onClick={() => setSelectedSlip(null)}>
                     <div className="relative max-w-lg w-full bg-slate-800 rounded-2xl p-2 border border-white/10 shadow-2xl animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
                         <img src={selectedSlip} alt="Payment Slip" className="w-full h-auto rounded-xl" />
                         <button

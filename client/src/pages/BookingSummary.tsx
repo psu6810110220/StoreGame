@@ -242,9 +242,9 @@ const BookingSummary: React.FC = () => {
                         <button
                             onClick={handleConfirmBooking}
                             disabled={loading || uploading || !slipUrl || !pickupDate}
-                            className={`flex-[2] px-6 py-4 rounded-2xl font-black text-lg text-white shadow-xl transition transform active:scale-95 ${loading || !slipUrl || !pickupDate
+                            className={`flex-2 px-6 py-4 rounded-2xl font-black text-lg text-white shadow-xl transition transform active:scale-95 ${loading || !slipUrl || !pickupDate
                                 ? 'bg-indigo-500/50 cursor-not-allowed'
-                                : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-indigo-500/30'
+                                : 'btn-gradient-primary shadow-indigo-500/30'
                                 }`}
                         >
                             {loading ? 'Submitting...' : 'Pay & Confirm Booking'}

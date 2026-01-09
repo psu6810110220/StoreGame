@@ -1,72 +1,63 @@
-import React, { useEffect, useState, memo } from 'react';
+import React from 'react';
 
-// Define Snowflake Interface
-interface Snowflake {
-    id: number;
-    left: number;
-    animationDuration: number;
-    animationDelay: number;
-    opacity: number;
-    size: number;
-}
-
-const SnowBackground: React.FC = memo(() => {
-    const [snowflakes, setSnowflakes] = useState<Snowflake[]>([]);
-
-    useEffect(() => {
-        // Generate static random values ONCE on mount
-        const flakes: Snowflake[] = Array.from({ length: 15 }, (_, i) => ({
-            id: i,
-            left: Math.random() * 100,
-            animationDuration: 10 + Math.random() * 10,
-            animationDelay: Math.random() * 5,
-            opacity: 0.2 + Math.random() * 0.5,
-            size: 0.2 + Math.random() * 0.5
-        }));
-        setSnowflakes(flakes);
-    }, []);
-
+const SnowBackground: React.FC = () => {
     return (
-        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
-            {snowflakes.map((flake) => (
-                <div
-                    key={flake.id}
-                    className="absolute top-[-10%] text-white animate-fall"
-                    style={{
-                        left: `${flake.left}%`,
-                        fontSize: `${flake.size}rem`,
-                        opacity: flake.opacity,
-                        animation: `fall ${flake.animationDuration}s linear infinite`,
-                        animationDelay: `-${flake.animationDelay}s`,
-                        willChange: 'transform'
-                    }}
-                >
-                    ❄
-                </div>
-            ))}
-
-            {/* 🎄 Decoration: Christmas Tree (Bottom Left) */}
-            <div className="absolute bottom-[-20px] left-[-20px] text-[8rem] md:text-[12rem] opacity-20 filter blur-[2px] transform -rotate-12 select-none z-0">
-                🎄
-            </div>
-
-            {/* 🦌 Decoration: Reindeer (Bottom Right) */}
-            <div className="absolute bottom-[-20px] right-[-20px] text-[8rem] md:text-[12rem] opacity-20 filter blur-[2px] transform rotate-12 select-none z-0 scale-x-[-1]">
-                🦌
-            </div>
-
+        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+            <div className="snow-layer layer-1"></div>
+            <div className="snow-layer layer-2"></div>
+            <div className="snow-layer layer-3"></div>
             <style>{`
-        @keyframes fall {
-          0% {
-            transform: translate3d(-10px, -10vh, 0) rotate(0deg); 
-          }
-          100% {
-            transform: translate3d(10px, 110vh, 0) rotate(360deg);
-          }
-        }
-      `}</style>
+                .snow-layer {
+                    position: absolute;
+                    top: -10px;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: transparent;
+                    border-radius: 50%;
+                    animation: snow-fall linear infinite;
+                }
+                
+                .layer-1 {
+                    width: 10px;
+                    height: 10px;
+                    box-shadow: 
+                        10vw 10vh #fff, 20vw 80vh #fff, 30vw 20vh #fff, 40vw 60vh #fff, 
+                        50vw 90vh #fff, 60vw 30vh #fff, 70vw 70vh #fff, 80vw 10vh #fff, 
+                        90vw 50vh #fff, 5vw 40vh #fff, 15vw 90vh #fff, 25vw 10vh #fff;
+                    animation-duration: 10s;
+                    opacity: 0.8;
+                }
+
+                .layer-2 {
+                    width: 6px;
+                    height: 6px;
+                    box-shadow: 
+                        5vw 20vh #fff, 15vw 70vh #fff, 25vw 30vh #fff, 35vw 90vh #fff, 
+                        45vw 10vh #fff, 55vw 50vh #fff, 65vw 80vh #fff, 75vw 20vh #fff, 
+                        85vw 60vh #fff, 95vw 10vh #fff, 10vw 50vh #fff, 30vw 80vh #fff;
+                    animation-duration: 15s;
+                    opacity: 0.5;
+                }
+
+                .layer-3 {
+                    width: 4px;
+                    height: 4px;
+                    box-shadow: 
+                        2vw 10vh #fff, 12vw 60vh #fff, 22vw 30vh #fff, 32vw 80vh #fff, 
+                        42vw 20vh #fff, 52vw 70vh #fff, 62vw 10vh #fff, 72vw 50vh #fff, 
+                        82vw 90vh #fff, 92vw 40vh #fff, 8vw 30vh #fff, 18vw 80vh #fff;
+                    animation-duration: 20s;
+                    opacity: 0.3;
+                }
+
+                @keyframes snow-fall {
+                    0% { transform: translateY(-10vh); }
+                    100% { transform: translateY(110vh); }
+                }
+            `}</style>
         </div>
     );
-});
+};
 
 export default SnowBackground;

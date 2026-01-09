@@ -12,6 +12,12 @@
 - **หมวดหมู่เกม**: ค้นหาเกมตามหมวดหมู่
 - **แดชบอร์ด**: แสดงรายการเกมและสถานะต่างๆ สำหรับทั้งผู้ใช้ทั่วไปและแอดมิน
 
+## จุดเด่นทางเทคนิค (Technical Highlights) ✨
+- **Modern UI/UX**: ดีไซน์แบบ **Glassmorphism** (กระจกฝ้า) ที่ทันสมัย พร้อมธีมสี Gradient ม่วง-ชมพู
+- **Clean CSS Architecture**: ใช้ **Tailwind CSS v4** ร่วมกับการแยก Custom Classes (เช่น `.btn-gradient`, `.text-gradient`) ไว้ในไฟล์กลาง เพื่อลดความซ้ำซ้อนของโค้ด
+- **Performance Optimized**: เอฟเฟกต์หิมะตก (Snow Effect) ใช้เทคนิค **CSS Box-Shadow** แทนการสร้าง Div จำนวนมาก เพื่อความลื่นไหล
+- **Role-Based Access Control (RBAC)**: ระบบจัดการสิทธิ์ User/Admin ที่ปลอดภัยทั้งฝั่ง Frontend และ Backend
+
 ## โครงสร้างโปรเจกต์ (Project Structure)
 - `/server`: Source code ของฝั่ง Server (NestJS) เชื่อมต่อกับฐานข้อมูล PostgreSQL
 - `/client`: Source code ของฝั่ง Client (React + Vite)

@@ -32,6 +32,12 @@
     *   **Backend**: ใน `users.service.ts` มีการสร้าง Seed Admin (Auto-create admin user) เมื่อรันระบบครั้งแรก
     *   **Frontend**: ใน `Dashboard.tsx` ใช้เงื่อนไข `{user.role === 'admin' && ...}` เพื่อซ่อน/แสดงปุ่มเมนูจัดการร้านค้า
 
+### Prompt 5: "CSS Optimization & Clean Code" (การปรับปรุงโครงสร้าง CSS และประสิทธิภาพ)
+**ความสำคัญ**: การเขียนโค้ดให้อ่านง่าย (Readability) และลดภาระเครื่อง (Performance)
+*   **สิ่งที่ AI ทำ**:
+    *   **Refactoring**: ย้าย Class ยาวๆ ของ Tailwind (เช่น Gradient สีปุ่ม) ไปเก็บเป็น Class มาตรฐานใน `index.css` (เช่น `.btn-gradient-primary`) ทำให้ไฟล์ React สะอาดตา
+    *   **Snow Optimization**: เปลี่ยนวิธีทำหิมะตกจากที่ใช้ `div` 50 ตัว มาเป็นเทคนิค `CSS Box-Shadow` (ใช้ div หลักแค่ 3 ตัว) ทำให้ลดภาระ DOM ของ Browser ไปได้อย่างมหาศาล
+
 ## 3. เจาะลึกการทำงานของไฟล์สำคัญ (Detailed Code Explanation)
 
 ### 📂 ฝั่ง Server (Backend)

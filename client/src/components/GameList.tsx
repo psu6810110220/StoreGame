@@ -201,7 +201,7 @@ const GameList: React.FC = () => {
                                         disabled={game.stockQuantity === 0}
                                         onClick={() => navigate('/booking-summary', { state: { game } })}
                                         className={`mt-4 w-full py-2.5 rounded-xl font-bold transition-all shadow-lg ${game.stockQuantity > 0
-                                            ? 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-indigo-500/30 transform hover:scale-[1.02]'
+                                            ? 'btn-gradient-primary text-white shadow-indigo-500/30 transform hover:scale-[1.02]'
                                             : 'bg-slate-700 text-slate-500 cursor-not-allowed'
                                             }`}
                                     >
@@ -232,7 +232,7 @@ const GameList: React.FC = () => {
                                             key={page}
                                             onClick={() => changePage(page)}
                                             className={`w-14 h-14 rounded-2xl font-extrabold text-lg transition-all flex items-center justify-center shadow-xl ${currentPage === page
-                                                ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white scale-110 shadow-indigo-500/50 ring-2 ring-white/20'
+                                                ? 'btn-page-active text-white scale-110 shadow-indigo-500/50 ring-2 ring-white/20'
                                                 : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white border border-white/10 hover:scale-105'
                                                 }`}
                                         >

@@ -35,7 +35,7 @@ function Dashboard() {
           }}
         >
           <div className="bg-indigo-500 p-2 rounded-lg text-white font-bold shadow-lg shadow-indigo-500/50">SG</div>
-          <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">
+          <span className="text-xl font-bold bg-clip-text text-transparent text-gradient-store">
             StoreGame
           </span>
         </div>
@@ -86,7 +86,7 @@ function Dashboard() {
 
         {/* 🛠️ ส่วนแสดงผลเฉพาะ Admin เท่านั้น */}
         {user?.role === 'admin' && (
-          <section className="bg-gradient-to-br from-indigo-900 to-purple-900 rounded-3xl p-8 shadow-xl text-white border border-indigo-500/30">
+          <section className="bg-gradient-admin rounded-3xl p-8 shadow-xl text-white border border-indigo-500/30">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div>
                 <h3 className="text-2xl font-bold flex items-center gap-3">

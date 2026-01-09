@@ -12,145 +12,104 @@
 #### **1. [auth.service.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/auth/auth.service.ts)**
 *   **หน้าที่หลัก**: Logic การยืนยันตัวตน (Authentication)
 *   **การทำงาน (Code Reference)**:
-    *   **ตรวจสอบรหัสผ่าน (`validateUser`)**: ใช้ `bcrypt` เทียบรหัสผ่านที่กรอกมา กับรหัสที่เข้ารหัสไว้ในฐานข้อมูล
-        ```typescript
-        const isMatch = await bcrypt.compare(pass, user.password);
-        if (user && isMatch) { ... }
-        ```
-    *   **สร้าง Token (`login`)**: บรรจุข้อมูล User ID และ Role ลงใน JWT Token
-        ```typescript
-        const payload = { username: user.username, sub: user.id, role: user.role };
-        return { access_token: this.jwtService.sign(payload) };
-        ```
+    *   **[ตรวจสอบรหัสผ่าน (validateUser)](file:///c:/Users/Windows%2011/StoreGame/server/src/auth/auth.service.ts#L33)**: ใช้ `bcrypt` เทียบรหัสผ่านที่กรอกมา กับรหัสที่เข้ารหัสไว้ในฐานข้อมูล
+    *   **[สร้าง Token (login)](file:///c:/Users/Windows%2011/StoreGame/server/src/auth/auth.service.ts#L51)**: บรรจุข้อมูล User ID และ Role ลงใน JWT Token
 
 #### **2. [jwt.strategy.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/auth/jwt.strategy.ts)**
 *   **หน้าที่หลัก**: ดักจับและแกะ Token (Strategy)
 *   **การทำงาน (Code Reference)**:
-    *   **ดึง Token จาก Header**:
-        ```typescript
-        super({
-          jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // อ่านจาก Authorization: Bearer ...
-          secretOrKey: 'SECRET_KEY', // กุญแจลับสำหรับถอดรหัส
-        });
-        ```
+    *   **[ดึง Token จาก Header](file:///c:/Users/Windows%2011/StoreGame/server/src/auth/jwt.strategy.ts#L15)**:
 
 #### **3. [roles.guard.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/auth/roles.guard.ts)**
 *   **หน้าที่หลัก**: ตรวจสอบสิทธิ์การใช้งาน (Authorization)
 *   **การทำงาน (Code Reference)**:
-    *   **เช็ค Role**: เปรียบเทียบ Role ของ User กับ Role ที่ API ต้องการ
-        ```typescript
-        const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(ROLES_KEY, ...);
-        const { user } = context.switchToHttp().getRequest();
-        return requiredRoles.some((role) => user.role?.includes(role)); // ถ้า Role ตรงกัน ยอมให้ผ่าน
-        ```
+    *   **[เช็ค Role (roles.guard.ts)](file:///c:/Users/Windows%2011/StoreGame/server/src/auth/roles.guard.ts#L10)**: เปรียบเทียบ Role ของ User กับ Role ที่ API ต้องการ
 
 ### **📁 /src/users (ระบบผู้ใช้งาน)**
 
 #### **1. [users.service.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/users/users.service.ts)**
 *   **หน้าที่หลัก**: จัดการข้อมูล User ใน Database
 *   **การทำงาน (Code Reference)**:
-    *   **สร้าง Admin อัตโนมัติ (`seedAdmin`)**: ทำงานตอนเริ่ม Server (`onModuleInit`)
-        ```typescript
-        if (!adminExists) {
-           const hashedPassword = await bcrypt.hash('admin1234', 10);
-           // save admin to db...
-        }
-        ```
+    *   **[สร้าง Admin อัตโนมัติ (seedAdmin)](file:///c:/Users/Windows%2011/StoreGame/server/src/users/users.service.ts#L20)**: ทำงานตอนเริ่ม Server (`onModuleInit`)
 
 ### **📁 /src/games (ระบบเกม)**
 
 #### **1. [games.controller.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/games/games.controller.ts)**
 *   **หน้าที่หลัก**: API Endpoints สำหรับเกม
 *   **การทำงาน (Code Reference)**:
-    *   **จำกัดสิทธิ์ Admin**: ใช้ Decorator `@Roles` เพื่อล็อก API
-        ```typescript
-        @Post()
-        @Roles(UserRole.ADMIN) // เฉพาะ Admin เท่านั้นที่เพิ่มเกมได้
-        create(@Body() createGameDto: CreateGameDto) { ... }
-        ```
+    *   **[จำกัดสิทธิ์ Admin (@Roles)](file:///c:/Users/Windows%2011/StoreGame/server/src/games/games.controller.ts#L18)**: ใช้ Decorator `@Roles` เพื่อล็อก API
 
 #### **2. [game.entity.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/entities/game.entity.ts)**
 *   **หน้าที่หลัก**: โครงสร้างตาราง Game ใน Database
 *   **การทำงาน (Code Reference)**:
-    *   **กำหนด Column**:
-        ```typescript
-        @Column()
-        title: string;
-        
-        @Column({ nullable: true }) // ยอมให้เป็นค่าว่างได้
-        imageUrl: string;
-        ```
+    *   **[กำหนด Column (game.entity.ts)](file:///c:/Users/Windows%2011/StoreGame/server/src/entities/game.entity.ts#L9)**:
 
 ---
 
 ## 🔵 ส่วนที่ 2: Client (`/client`) - React Frontend
-ทำหน้าที่แสดงผลและโต้ตอบกับผู้ใช้
+ทำหน้าที่แสดงผลและโต้ตอบกับผู้ใช้ พัฒนาด้วย **React (Vite 5)** + **Tailwind CSS**
 
-### **📁 /src (Configuration & Routing)**
+### **📁 / (Configuration & Style)**
 
-#### **2. [App.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/App.tsx)**
+#### **1. [tailwind.config.js](file:///c:/Users/Windows%2011/StoreGame/client/tailwind.config.js)**
+*   **หน้าที่หลัก**: กำหนด Theme สีและ Font ของทั้งเว็บ (Design System)
+*   **การทำงาน (Code Reference)**:
+    *   **[Custom Colors](file:///c:/Users/Windows%2011/StoreGame/client/tailwind.config.js#L1)**: กำหนดสีหลัก (Primary) และสีรอง (Secondary) เพื่อให้เรียกใช้ง่ายๆ เช่น `bg-primary`, `text-secondary`
+
+#### **2. [index.css](file:///c:/Users/Windows%2011/StoreGame/client/src/index.css)**
+*   **หน้าที่หลัก**: ไฟล์ CSS หลักที่เรียกใช้ Tailwind
+*   **การทำงาน**:
+    ```css
+    @import "tailwindcss";
+
+    @layer utilities {
+      /* Custom Gradients & Utilities (Clean Architecture) */
+      .text-gradient-store {
+        background: linear-gradient(to right, #818cf8, #c084fc);
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+      .btn-gradient-primary {
+        background: linear-gradient(to right, #4f46e5, #9333ea);
+      }
+      .z-modal-overlay {
+        z-index: 60;
+      }
+    }
+    ```
+
+### **📁 /src (Entry & Routing)**
+
+#### **1. [App.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/App.tsx)**
 *   **หน้าที่หลัก**: จัดการเส้นทาง (Route) และการป้องกันหน้าเว็บ
 *   **การทำงาน (Code Reference)**:
-    *   **Protected Route**: เช็คว่ามี Token ไหม ถ้าไม่มีให้ดีดกลับไป Login
-        ```typescript
-        const ProtectedRoute = ({ children }) => {
-          const { token } = useAuth();
-          if (!token) return <Navigate to="/login" replace />;
-          return <>{children}</>;
-        };
-        ```
+    *   **[Protected Route](file:///c:/Users/Windows%2011/StoreGame/client/src/App.tsx#L13)**: เช็คว่ามี Token ไหม ถ้าไม่มีให้ดีดกลับไป Login
 
 ### **📁 /src/context (การจัดการข้อมูลส่วนกลาง)**
 
 #### **1. [AuthContext.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/context/AuthContext.tsx)**
 *   **หน้าที่**: เก็บสถานะการ Login
 *   **การทำงาน (Code Reference)**:
-    *   **บันทึก Token (`login`)**:
-        ```typescript
-        const login = (accessToken, ...) => {
-           // จำในเครื่อง (ถาวร) หรือ จำใน Browser (ชั่วคราว)
-           const storage = remember ? localStorage : sessionStorage;
-           storage.setItem('token', accessToken);
-           axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`; // แนบ Token ไปกับทุก Request
-        };
-        ```
+    *   **[บันทึก Token (login)](file:///c:/Users/Windows%2011/StoreGame/client/src/context/AuthContext.tsx#L54)**:
 
 #### **2. [CartContext.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/context/CartContext.tsx)**
 *   **หน้าที่**: ตะกร้าสินค้า
 *   **การทำงาน (Code Reference)**:
-    *   **เพิ่มสินค้า (`addToCart`)**:
-        ```typescript
-        setCart((prevCart) => {
-           const existing = prevCart.find(item => item.id === product.id);
-           if (existing) { return ...quantity + 1... } // ถ้ามีแล้ว บวกจำนวน
-           return [...prevCart, { ...product, quantity: 1 }]; // ถ้าไม่มี เพิ่มใหม่
-        });
-        ```
+    *   **[เพิ่มสินค้า (addToCart)](file:///c:/Users/Windows%2011/StoreGame/client/src/context/CartContext.tsx#L38)**:
 
 ### **📁 /src/pages (หน้าจอและการทำงาน)**
 
-#### **2. [Dashboard.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/pages/Dashboard.tsx)**
+#### **1. [Dashboard.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/pages/Dashboard.tsx)**
 *   **หน้าที่**: หน้าหลัก Dashboard
 *   **การทำงาน (Code Reference)**:
-    *   **แยกเมนู Admin**:
-        ```tsx
-        {user.role === 'admin' && (
-           <AdminPanel /> // แสดงส่วนนี้เฉพาะเมื่อเป็น Admin
-        )}
-        ```
+    *   **[แยกเมนู Admin](file:///c:/Users/Windows%2011/StoreGame/client/src/pages/Dashboard.tsx#L87)**:
 
-#### **3. [MyBookings.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/pages/MyBookings.tsx)**
+#### **2. [MyBookings.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/pages/MyBookings.tsx)**
 *   **หน้าที่**: หน้าประวัติการจอง
 *   **การทำงาน (Code Reference)**:
-    *   **ดึงข้อมูล (`useEffect`)**:
-        ```typescript
-        useEffect(() => {
-           const data = await getMyBookings(token);
-           setBookings(data);
-        }, [token]);
-        ```
+    *   **[ดึงข้อมูล (useEffect)](file:///c:/Users/Windows%2011/StoreGame/client/src/pages/MyBookings.tsx#L36)**:
 
-#### **4. [BookingManagement.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/pages/BookingManagement.tsx)**
+#### **3. [BookingManagement.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/pages/BookingManagement.tsx)**
 *   **หน้าที่**: หน้าจัดการการจอง (Admin)
 *   **การทำงาน (Code Reference)**:
     *   **อนุมัติจ่ายเงิน (`handlePaymentAction`)**:
@@ -161,38 +120,19 @@
         }
         ```
 
-#### **5. [GameManagement.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/pages/GameManagement.tsx)**
+#### **4. [GameManagement.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/pages/GameManagement.tsx)**
 *   **หน้าที่**: หน้าจัดการเกม (Admin)
 *   **การทำงาน (Code Reference)**:
-    *   **Preview รูปภาพ**:
-        ```tsx
-        <input onChange={(e) => setFormData({...formData, imageUrl: e.target.value})} />
-        {/* รูปตัวอย่างจะเปลี่ยนทันทีที่ State เปลี่ยน */}
-        <img src={formData.imageUrl} />
-        ```
+    *   **[Preview รูปภาพ (GameManagement.tsx)](file:///c:/Users/Windows%2011/StoreGame/client/src/pages/GameManagement.tsx#L394)**:
 
 ### **📁 /src/components (UI ย่อย)**
 
 #### **1. [GameList.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/components/GameList.tsx)**
 *   **หน้าที่**: แสดงรายการเกม
 *   **การทำงาน (Code Reference)**:
-    *   **กรองหมวดหมู่**:
-        ```typescript
-        const filteredGames = games.filter(game => {
-           if (categoryFilter === 'All') return true;
-           return game.category === categoryFilter;
-        });
-        ```
+    *   **[กรองหมวดหมู่ (GameList.tsx)](file:///c:/Users/Windows%2011/StoreGame/client/src/components/GameList.tsx#L125)**:
 
 #### **2. [SnowBackground.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/components/SnowBackground.tsx)**
 *   **หน้าที่**: Effect หิมะตก
 *   **การทำงาน (Code Reference)**:
-    *   **สร้างหิมะสุ่ม**:
-        ```tsx
-        {[...Array(50)].map((_, i) => (
-           <div style={{ 
-              left: `${Math.random() * 100}vw`, 
-              animationDuration: `${Math.random() * 3 + 2}s` 
-           }} />
-        ))}
-        ```
+    *   **[CSS Box-Shadow Technique](file:///c:/Users/Windows%2011/StoreGame/client/src/index.css#L4)**: แทนที่จะสร้าง div หลายตัว ใช้ box-shadow สร้างจุดหลายๆ จุดใน layer เดียว

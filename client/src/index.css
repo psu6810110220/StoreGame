@@ -1,1 +1,48 @@
 @import "tailwindcss";
+
+@layer utilities {
+  /* Custom Gradients & Utilities */
+  .text-gradient-store {
+    background: linear-gradient(to right, #818cf8, #c084fc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .text-gradient-welcome {
+    background: linear-gradient(to right, #f87171, #fb7185, #f472b6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .btn-gradient-primary {
+    background: linear-gradient(to right, #4f46e5, #9333ea);
+  }
+  .btn-gradient-primary:hover {
+    background: linear-gradient(to right, #6366f1, #a855f7);
+  }
+
+  .btn-gradient-login {
+    background: linear-gradient(to right, #f43f5e, #db2777);
+  }
+  .btn-gradient-login:hover {
+    background: linear-gradient(to right, #fb7185, #ec4899);
+  }
+
+  .bg-gradient-admin {
+    background: linear-gradient(to bottom right, #312e81, #581c87);
+  }
+
+  .btn-page-active {
+    background: linear-gradient(to bottom right, #6366f1, #9333ea);
+  }
+
+  .z-modal-overlay {
+    z-index: 60;
+  }
+
+  .flex-2 {
+    flex: 2;
+  }
+}

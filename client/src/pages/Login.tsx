@@ -57,7 +57,7 @@ export default function Login() {
           <div className="absolute -top-12 -right-8 text-5xl animate-bounce delay-700 drop-shadow-lg">🎋</div>
 
           <div className="text-6xl mb-4 drop-shadow-lg inline-block hover:scale-110 transition-transform cursor-pointer">🎮</div>
-          <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-rose-400 to-pink-400">
+          <h2 className="text-4xl font-extrabold text-transparent bg-clip-text text-gradient-welcome">
             Welcome!
           </h2>
           <p className="mt-3 text-sm text-slate-300 font-medium">
@@ -124,7 +124,7 @@ export default function Login() {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-400 hover:to-pink-500 shadow-lg shadow-rose-500/30 transition-all duration-200 transform hover:scale-[1.02] hover:shadow-rose-500/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
+              className="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-bold rounded-xl text-white btn-gradient-login shadow-lg shadow-rose-500/30 transition-all duration-200 transform hover:scale-[1.02] hover:shadow-rose-500/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
             >
               Start Gaming 🚀
             </button>
