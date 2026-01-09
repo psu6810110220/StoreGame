@@ -90,7 +90,16 @@ async function bootstrap() {
     ];
 
     console.log('Seeding games...');
+
+    const existingGames = await gamesService.findAll();
+    const existingTitles = new Set(existingGames.map(g => g.title));
+
     for (const game of games) {
+        if (existingTitles.has(game.title)) {
+            console.log(`⏩ Game "${game.title}" already exists. Skipping...`);
+            continue;
+        }
+
         try {
             await gamesService.create(game);
             console.log(`✅ Created game: ${game.title}`);
