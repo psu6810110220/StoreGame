@@ -1,17 +1,11 @@
 import { Controller, Get, Post, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { AppService } from './app.service';
 import { extname, join } from 'path';
 import { writeFileSync } from 'fs';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) { }
-
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
+  constructor() { }
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))

@@ -7,28 +7,49 @@ import UserManagement from "./UserManagement";
 import GameList from "../components/GameList";
 import SnowBackground from "../components/SnowBackground";
 
+/**
+ * 🟡 Dashboard Component
+ * ==========================================
+ * หน้าหลักของเว็บไซต์ (หลังจาก Login แล้ว)
+ * ทำหน้าที่เป็นศูนย์กลางของระบบ:
+ * 1. แสดงรายชื่อเกม (Marketplace)
+ * 2. แสดงเมนูสำหรับ Admin (ถ้าล็อกอินเป็น Admin)
+ * 3. แสดง Nav Bar และข้อมูลผู้ใช้
+ */
 function Dashboard() {
-  const { user, logout } = useAuth();
+  const { user, logout } = useAuth(); // ดึงข้อมูล User และฟังก์ชัน Logout
   const navigate = useNavigate();
+
+  // ----------------------------------------------------
+  // 1. State Management (ตัวแปรควบคุมหน้าจอ)
+  // ----------------------------------------------------
+
+  // ควบคุมการเปิด/ปิด Panel ของ Admin (Game, Booking, User)
   const [showGameManagement, setShowGameManagement] = useState(false);
   const [showBookingManagement, setShowBookingManagement] = useState(false);
   const [showUserManagement, setShowUserManagement] = useState(false);
 
-  // Key to force reset GameList (return to page 1)
+  // Key สำหรับ Force Refresh Component GameList
+  // (เทคนิค: เมื่อค่า key เปลี่ยน React จะทำลาย Component เก่าทิ้งและสร้างใหม่ทันที)
+  // ใช้เมื่อเราต้องการรีเซ็ต State ภายในของ GameList (เช่น หน้า Pagination กลับไปหน้า 1)
   const [gameListKey, setGameListKey] = useState(0);
 
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col relative">
       <SnowBackground />
-      {/* 🌐 Navbar */}
+
+      {/* ---------------------------------------------------- */}
+      {/* 2. Navbar (ส่วนหัวของเว็บไซต์)                         */}
+      {/* ---------------------------------------------------- */}
       <nav className="bg-slate-800/80 backdrop-blur-md shadow-sm border-b border-white/10 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+
+        {/* Logo & Brand Name */}
         <div
           className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
           onClick={() => {
             navigate('/dashboard');
-            // Force reset GameList to page 1 by incrementing key
-            setGameListKey(prev => prev + 1);
-            // Optionally close admin panels if open, to truly "reset" view
+            setGameListKey(prev => prev + 1); // รีเซ็ตหน้า GameList
+            // ปิด Panel Admin ทั้งหมดเพื่อให้หน้าจอสะอาด
             setShowGameManagement(false);
             setShowBookingManagement(false);
             setShowUserManagement(false);
@@ -40,8 +61,9 @@ function Dashboard() {
           </span>
         </div>
 
+        {/* Right Menu (Profile & Actions) */}
         <div className="flex items-center gap-4">
-          {/* My Bookings Button */}
+          {/* ปุ่มไปหน้า "การจองของฉัน" */}
           <button
             onClick={() => navigate('/my-bookings')}
             className="hidden sm:flex text-sm font-bold text-slate-300 hover:text-white border border-white/10 hover:border-indigo-500/50 bg-slate-700/50 hover:bg-slate-700 px-4 py-2 rounded-full transition-all"
@@ -49,13 +71,18 @@ function Dashboard() {
             📅 My Bookings
           </button>
 
+          {/* User Info Display */}
           <div className="text-right hidden sm:block">
             <p className="text-sm font-semibold text-slate-200">{user?.username || "Guest User"}</p>
             <p className="text-xs text-indigo-400 capitalize">{user?.role || "user"}</p>
           </div>
+
+          {/* User Avatar Circle */}
           <div className="h-10 w-10 rounded-full bg-slate-700 flex items-center justify-center text-indigo-400 font-bold border-2 border-indigo-500/30 shadow-sm">
             {user?.username?.charAt(0).toUpperCase() || "U"}
           </div>
+
+          {/* Logout Button */}
           <button
             onClick={logout}
             className="flex items-center gap-2 bg-red-500/10 text-red-400 px-4 py-2 rounded-full font-bold hover:bg-red-500/20 transition-colors shadow-sm border border-red-500/20"
@@ -66,7 +93,10 @@ function Dashboard() {
       </nav>
 
       <main className="flex-1 p-6 md:p-10 max-w-7xl mx-auto w-full space-y-8 z-10">
-        {/* 👋 Welcome & Status Section */}
+
+        {/* ---------------------------------------------------- */}
+        {/* 3. Welcome Section (ส่วนต้อนรับ)                      */}
+        {/* ---------------------------------------------------- */}
         <section className="bg-slate-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-lg border border-white/5 relative overflow-hidden">
           <div className="relative z-10">
             <h2 className="text-3xl font-extrabold text-white">
@@ -84,7 +114,9 @@ function Dashboard() {
           </div>
         </section>
 
-        {/* 🛠️ ส่วนแสดงผลเฉพาะ Admin เท่านั้น */}
+        {/* ---------------------------------------------------- */}
+        {/* 4. Admin Control Planel (เฉพาะ Admin เท่านั้นที่เห็น)  */}
+        {/* ---------------------------------------------------- */}
         {user?.role === 'admin' && (
           <section className="bg-gradient-admin rounded-3xl p-8 shadow-xl text-white border border-indigo-500/30">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -98,6 +130,7 @@ function Dashboard() {
                 </p>
               </div>
 
+              {/* ปุ่มควบคุมต่างๆ ของ Admin (Toggle Panels) */}
               <div className="flex gap-4">
                 <button
                   onClick={() => setShowUserManagement(!showUserManagement)}
@@ -129,6 +162,8 @@ function Dashboard() {
               </div>
             </div>
 
+            {/* แสดง Panel เมื่อกดปุ่ม (Conditional Rendering) */}
+
             {showGameManagement && (
               <div className="mt-10 animate-in fade-in slide-in-from-top-4 duration-500 bg-slate-900/50 rounded-2xl p-4 border border-white/10">
                 <GameManagement />
@@ -150,13 +185,15 @@ function Dashboard() {
           </section>
         )}
 
-        {/* 🛒 Marketplace */}
+        {/* ---------------------------------------------------- */}
+        {/* 5. Marketplace Section (หน้ารายการสินค้า)              */}
+        {/* ---------------------------------------------------- */}
         <section>
           <div className="flex items-center gap-3 mb-6">
             <h3 className="text-2xl font-bold text-white">Available Games</h3>
             <div className="h-px flex-1 bg-white/10"></div>
           </div>
-          {/* Key forces GameList to re-mount and reset to page 1 */}
+          {/* ส่ง key เข้าไปเพื่อให้ Component รีเฟรชตัวเองเมื่อ reset หน้า */}
           <GameList key={gameListKey} />
         </section>
       </main>

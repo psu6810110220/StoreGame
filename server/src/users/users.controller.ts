@@ -1,10 +1,9 @@
 import { Controller, Get, Delete, Param, UseGuards, ParseIntPipe, Logger } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-// import { RolesGuard } from '../auth/roles.guard';
-// import { Roles } from '../auth/roles.decorator';
-// import { UserRole } from './user.entity';
 
+// จัดการเกี่ยวกับ User (ดูข้อมูล, ลบ)
+// เข้าถึงได้เฉพาะคนมี Token (@UseGuards(JwtAuthGuard))
 @Controller('users')
 @UseGuards(JwtAuthGuard)
 export class UsersController {
@@ -12,17 +11,17 @@ export class UsersController {
 
     constructor(private readonly usersService: UsersService) { }
 
+    // ดึงข้อมูล User ทั้งหมด
+    // GET: /users
     @Get()
-    // @UseGuards(RolesGuard)
-    // @Roles(UserRole.ADMIN)
     async findAll() {
         this.logger.log('Fetching all users');
         return this.usersService.findAll();
     }
 
+    // ลบ User ตาม ID
+    // DELETE: /users/1
     @Delete(':id')
-    // @UseGuards(RolesGuard)
-    // @Roles(UserRole.ADMIN)
     async remove(@Param('id', ParseIntPipe) id: number) {
         this.logger.log(`Deleting user ID ${id}`);
         return this.usersService.remove(id);

@@ -9,12 +9,11 @@
 
 ### **📁 /src/auth (ระบบความปลอดภัยและการเข้าสู่ระบบ)**
 
-#### **1. [auth.service.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/auth/auth.service.ts)**
+###### **1. [auth.service.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/auth/auth.service.ts)**
 *   **หน้าที่หลัก**: Logic การยืนยันตัวตน (Authentication)
-*   **การทำงาน (Code Reference)**:
+*   **การทำงาน (Code Reference)**: 
     *   **[ตรวจสอบรหัสผ่าน (validateUser)](file:///c:/Users/Windows%2011/StoreGame/server/src/auth/auth.service.ts#L33)**: ใช้ `bcrypt` เทียบรหัสผ่านที่กรอกมา กับรหัสที่เข้ารหัสไว้ในฐานข้อมูล
     *   **[สร้าง Token (login)](file:///c:/Users/Windows%2011/StoreGame/server/src/auth/auth.service.ts#L51)**: บรรจุข้อมูล User ID และ Role ลงใน JWT Token
-
 #### **2. [jwt.strategy.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/auth/jwt.strategy.ts)**
 *   **หน้าที่หลัก**: ดักจับและแกะ Token (Strategy)
 *   **การทำงาน (Code Reference)**:
@@ -43,6 +42,49 @@
 *   **หน้าที่หลัก**: โครงสร้างตาราง Game ใน Database
 *   **การทำงาน (Code Reference)**:
     *   **[กำหนด Column (game.entity.ts)](file:///c:/Users/Windows%2011/StoreGame/server/src/entities/game.entity.ts#L9)**:
+    
+### **📁 /src/payments (ระบบการชำระเงิน) [NEW]**
+
+#### **1. [payments.module.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/payments/payments.module.ts)**
+*   **หน้าที่หลัก**: รวม Components ของระบบจ่ายเงิน
+*   **การทำงาน**: ลงทะเบียน `PaymentsController` และ `PaymentsService` รวมถึงเชื่อมต่อกับ TypeORM
+
+#### **2. [payments.controller.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/payments/payments.controller.ts)**
+*   **หน้าที่หลัก**: API Endpoints สำหรับการแจ้งชำระเงิน
+*   **การทำงาน**:
+    *   `POST /payments/upload-slip`: รับไฟล์สลิปโอนเงิน
+    *   `POST /payments`: บันทึกข้อมูลการโอนเงิน (ผูกกับ Booking ID)
+
+#### **3. [payments.service.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/payments/payments.service.ts)**
+*   **หน้าที่หลัก**: Business Logic ของการจ่ายเงิน
+*   **การทำงาน**:
+    *   ตรวจสอบความถูกต้องของ Booking (ยอดเงินตรงไหม, สถานะปัจจุบัน)
+    *   บันทึกข้อมูลและอัปเดตสถานะ Booking เป็น `PAID` หรือ `PENDING_REVIEW`
+
+#### **4. [payment.entity.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/entities/payment.entity.ts)**
+*   **หน้าที่หลัก**: ตารางเก็บข้อมูล Payment
+*   **Structure**:
+    *   `amount`: จำนวนเงินที่โอน
+    *   `slipUrl`: ลิงก์รูปภาพสลิป
+    *   `booking`: ความสัมพันธ์ One-to-One กับตาราง Booking
+
+### **📁 /src/dashboard (ระบบสรุปผลข้อมูล) [NEW]**
+
+#### **1. [dashboard.module.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/dashboard/dashboard.module.ts)**
+*   **หน้าที่หลัก**: รวบรวม Dependencies จาก Module อื่นๆ (Users, Bookings, Games)
+*   **การทำงาน**: Import Services ที่จำเป็นเข้ามาเพื่อประมวลผลข้อมูล
+
+#### **2. [dashboard.controller.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/dashboard/dashboard.controller.ts)**
+*   **หน้าที่หลัก**: API Endpoints สำหรับข้อมูลกราฟและสถิติ
+*   **การทำงาน**:
+    *   `GET /dashboard/stats`: ดึงข้อมูลสรุป (ยอดขายรวม, จำนวน User, จำนวน Booking)
+    *   `GET /dashboard/revenue-chart`: ดึงข้อมูลกราฟรายได้รายเดือน/รายวัน
+
+#### **3. [dashboard.service.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/dashboard/dashboard.service.ts)**
+*   **หน้าที่หลัก**: คำนวณและประมวลผลสถิติ
+*   **การทำงาน**:
+    *   `getSummary()`: Query นับจำนวน Users, Bookings และ Sum ยอดเงินจาก Payment
+    *   `getDailyRevenue()`: Query ยอดขายแยกตามวันเพื่อนำไปพล็อตกราฟ
 
 ---
 
@@ -84,6 +126,32 @@
 *   **หน้าที่หลัก**: จัดการเส้นทาง (Route) และการป้องกันหน้าเว็บ
 *   **การทำงาน (Code Reference)**:
     *   **[Protected Route](file:///c:/Users/Windows%2011/StoreGame/client/src/App.tsx#L13)**: เช็คว่ามี Token ไหม ถ้าไม่มีให้ดีดกลับไป Login
+
+### **📁 /src/services (การเชื่อมต่อ API) [NEW]**
+
+#### **1. [auth.service.ts](file:///c:/Users/Windows%2011/StoreGame/client/src/services/auth.service.ts)**
+*   **หน้าที่**: ยิง API Login/Register
+*   **โค้ด**: `axios.post('/auth/login', ...)`
+
+#### **2. [games.service.ts](file:///c:/Users/Windows%2011/StoreGame/client/src/services/games.service.ts)**
+*   **หน้าที่**: ดึงข้อมูลเกม, สร้างเกมใหม่
+*   **โค้ด**: `fetch('/games', ...)`
+
+#### **3. [bookings.service.ts](file:///c:/Users/Windows%2011/StoreGame/client/src/services/bookings.service.ts)**
+*   **หน้าที่**: จองเกม, ดึงประวัติการจอง
+*   **โค้ด**: `fetch('/bookings', ...)`
+
+#### **4. [payments.service.ts](file:///c:/Users/Windows%2011/StoreGame/client/src/services/payments.service.ts) [PLANNED]**
+*   **หน้าที่**: อัปโหลดสลิปเงิิน
+*   **การทำงาน**:
+    *   `uploadSlip(file)`: ส่งไฟล์ภาพไปที่ `/payments/upload-slip`
+    *   `confirmPayment(bookingId)`: แจ้งยืนยันการโอน
+
+#### **5. [dashboard.service.ts](file:///c:/Users/Windows%2011/StoreGame/client/src/services/dashboard.service.ts) [PLANNED]**
+*   **หน้าที่**: ดึงข้อมูลสถิติมาแสดงบน Dashboard
+*   **การทำงาน**:
+    *   `getStats()`: ดึงยอดขายรวม, จำนวน User
+    *   `getRevenueChart()`: ดึงข้อมูลกราฟ
 
 ### **📁 /src/context (การจัดการข้อมูลส่วนกลาง)**
 

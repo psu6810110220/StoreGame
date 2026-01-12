@@ -20,18 +20,33 @@ interface Game {
     imageUrl: string;
 }
 
+/**
+ * 🟡 BookingSummary Component
+ * ==========================================
+ * หน้า "สรุปการจอง และ ชำระเงิน"
+ * หน้าที่หลัก:
+ * 1. แสดงรายละเอียดเกมที่จะจอง
+ * 2. คำนวณเงินมัดจำ (10%)
+ * 3. ให้ User อัปโหลดสลิปโอนเงิน
+ * 4. บันทึกการจองลง Backend
+ */
 const BookingSummary: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { token } = useAuth();
-    // Safely access game state with optional chaining
+
+    // รับข้อมูลเกมที่ส่งมาจากหน้า Dashboard (ผ่าน State ของ React Router)
     const game = location.state?.game as Game | undefined;
 
+    // State สำหรับเก็บวันที่มารับของ
     const [pickupDate, setPickupDate] = useState('');
     const [loading, setLoading] = useState(false);
+
+    // State สำหรับเก็บ URL รูปสลิปหลังจาก Upload เสร็จแล้ว
     const [slipUrl, setSlipUrl] = useState('');
     const [uploading, setUploading] = useState(false);
 
+    // State สำหรับ Popup แจ้งเตือนผลลัพธ์
     const [popup, setPopup] = useState<{ show: boolean; message: string; type: 'success' | 'error' }>({
         show: false,
         message: '',
@@ -57,24 +72,27 @@ const BookingSummary: React.FC = () => {
         );
     }
 
-    const depositAmount = game.price * 0.10;
+    const depositAmount = game.price * 0.10; // คำนวณมัดจำ 10%
 
+    // ฟังก์ชันอัปโหลดรูปสลิป
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
+        const file = e.target.files?.[0]; // ดึงไฟล์จาก Input
         if (!file) return;
 
-        setUploading(true);
+        setUploading(true); // หมุนติ้วๆ
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append('file', file); // เตรียมข้อมูลเหมือนส่ง Form ปกติ
 
         try {
+            // ยิงไปที่ Endpoint /upload ของ Backend
             const res = await fetch('http://localhost:3000/upload', {
                 method: 'POST',
                 body: formData
             });
             const data = await res.json();
+
             if (data.url) {
-                setSlipUrl(data.url);
+                setSlipUrl(data.url); // ได้ URL กลับมา เก็บใส่ State ไว้
             } else {
                 alert("Upload failed");
             }
@@ -82,11 +100,13 @@ const BookingSummary: React.FC = () => {
             console.error(err);
             alert("Error uploading slip");
         } finally {
-            setUploading(false);
+            setUploading(false); // หยุดหมุน
         }
     };
 
+    // ฟังก์ชันยืนยันการจอง (กดปุ่ม Confirm)
     const handleConfirmBooking = async () => {
+        // Validation: ตรวจสอบข้อมูลก่อนส่ง
         if (!pickupDate) {
             setPopup({ show: true, message: 'Please select a pickup date', type: 'error' });
             return;
@@ -99,18 +119,20 @@ const BookingSummary: React.FC = () => {
 
         setLoading(true);
         try {
+            // เตรียมข้อมูล Booking ตามที่ Backend ต้องการ (CreateBookingDto)
             const bookingData = {
-                pickupDate: new Date(pickupDate).toISOString(),
+                pickupDate: new Date(pickupDate).toISOString(), // แปลงวันที่เป็นมาตรฐาน ISO
                 items: [
                     {
                         gameId: game.id,
-                        quantity: 1
+                        quantity: 1 // (Demo นี้จองได้ทีละ 1 เกม)
                     }
                 ],
-                slipUrl: slipUrl
+                slipUrl: slipUrl // ส่ง URL สลิปไปด้วย
             };
 
             if (token) {
+                // เรียก API สร้างการจอง
                 await createBooking(token, bookingData);
                 setPopup({ show: true, message: 'Booking & Payment Submitted! Waiting for admin approval.', type: 'success' });
             }

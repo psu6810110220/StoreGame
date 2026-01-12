@@ -5,41 +5,47 @@ import { useAuth } from '../context/AuthContext';
 import SnowBackground from '../components/SnowBackground';
 
 export default function Login() {
-  const navigate = useNavigate();
-  const { login } = useAuth();
+  const navigate = useNavigate(); // ใช้สำหรับเปลี่ยนหน้า
+  const { login } = useAuth();    // ดึงฟังก์ชัน login จาก AuthContext
 
+  // State เก็บค่าที่ user พิมพ์
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
 
-  // Custom Notification State
+  // State สำหรับแสดงแจ้งเตือน (Notification)
   const [notification, setNotification] = useState<{ show: boolean; message: string; type: 'success' | 'error' } | null>(null);
 
+  // ฟังก์ชันเมื่อกดปุ่ม Login
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); // กันไม่ให้หน้าเว็บ Refresh เอง
 
-    // Reset notification
+    // เคลียร์แจ้งเตือนเก่าก่อน
     setNotification(null);
 
     try {
+      // 1. ส่งข้อมูลไปเช็คที่ Backend
       const response = await axios.post('http://localhost:3000/auth/login', {
         identity: username,
         password: password
       });
 
+      // 2. ถ้าได้ Token กลับมา แปลว่าล็อกอินสำเร็จ
       if (response.data.access_token) {
+        // บันทึก Token ลงเครื่อง (ผ่าน AuthContext)
         login(response.data.access_token, response.data.user, rememberMe);
 
-        // Show success notification
+        // แสดงผลสำเร็จ
         setNotification({ show: true, message: 'Welcome! 🎆', type: 'success' });
 
-        // Delay navigation slightly to show the message
+        // รอ 1.5 วินาที แล้วค่อยเปลี่ยนหน้าไป Dashboard (เพื่อให้ user อ่านข้อความ welcome ทัน)
         setTimeout(() => {
           navigate('/dashboard');
         }, 1500);
       }
     } catch (error: any) {
       console.error('Login Error:', error);
+      // ถ้า Error ให้แสดงข้อความแจ้งเตือน
       const errorMsg = error.response?.data?.message || 'Invalid username or password.';
       setNotification({ show: true, message: errorMsg, type: 'error' });
     }

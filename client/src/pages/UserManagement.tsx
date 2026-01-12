@@ -11,11 +11,19 @@ interface User {
     lastName: string;
 }
 
+/**
+ * 🟡 UserManagement Component
+ * ==========================================
+ * หน้าจอสำหรับ Admin เพื่อจัดการสมาชิก
+ * - ดูรายชื่อสมาชิกทั้งหมด
+ * - ลบสมาชิก (Delete User)
+ */
 const UserManagement: React.FC = () => {
     const { token, user: currentUser } = useAuth();
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
 
+    // ฟังก์ชันดึงข้อมูล User ทั้งหมด
     const fetchUsers = async () => {
         try {
             if (token) {
@@ -33,11 +41,13 @@ const UserManagement: React.FC = () => {
         fetchUsers();
     }, [token]);
 
+    // ฟังก์ชันลบ User
     const handleDelete = async (id: number) => {
         if (!window.confirm("Are you sure you want to delete this user?")) return;
         try {
             if (token) {
                 await deleteUser(token, id);
+                // ลบเสร็จแล้ว ให้เอาออกจากรายการที่แสดงอยู่ทันที (ไม่ต้องโหลดใหม่)
                 setUsers(users.filter(u => u.id !== id));
             }
         } catch (error) {
@@ -51,7 +61,7 @@ const UserManagement: React.FC = () => {
         <div className="relative">
             <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
                 <span className="text-3xl">🎄</span>
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-teal-400">
+                <span className="bg-clip-text text-transparent bg-linear-to-r from-emerald-400 to-teal-400">
                     Member List
                 </span>
             </h3>
@@ -75,7 +85,7 @@ const UserManagement: React.FC = () => {
                                         #{user.id}
                                     </td>
                                     <td className="p-4 font-bold text-white flex items-center gap-2">
-                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xs font-bold ring-2 ring-transparent group-hover:ring-white/20 transition-all">
+                                        <div className="w-8 h-8 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xs font-bold ring-2 ring-transparent group-hover:ring-white/20 transition-all">
                                             {user.username.charAt(0).toUpperCase()}
                                         </div>
                                         {user.username}

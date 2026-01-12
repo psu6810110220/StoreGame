@@ -7,6 +7,9 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { UserRole } from '../users/user.entity';
 
+// ควบคุมเส้นทาง /games
+// ทุก Endpoint ในนี้ต้องผ่านด่าน User ปกติก่อน (JwtAuthGuard)
+// และต้องผ่านด่านเช็คตำแหน่ง (RolesGuard) ถ้ามีการระบุ @Roles
 @Controller('games')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class GamesController {
@@ -14,23 +17,31 @@ export class GamesController {
 
     constructor(private readonly gamesService: GamesService) { }
 
+    // สร้างเกมใหม่ (เฉพาะ Admin เท่านั้น)
+    // POST /games
     @Post()
-    @Roles(UserRole.ADMIN)
+    @Roles(UserRole.ADMIN) // 🔒 จำกัดสิทธิ์ Admin
     create(@Body() createGameDto: CreateGameDto) {
         this.logger.log(`Creating Game: ${JSON.stringify(createGameDto)}`);
         return this.gamesService.create(createGameDto);
     }
 
+    // ดูรายชื่อเกมทั้งหมด (ทุกคนดูได้ ขอแค่ Login)
+    // GET /games
     @Get()
     findAll() {
         return this.gamesService.findAll();
     }
 
+    // ดูรายละเอียดเกมรายตัว
+    // GET /games/:id
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
         return this.gamesService.findOne(id);
     }
 
+    // แก้ไขข้อมูลเกม (เฉพาะ Admin)
+    // PATCH /games/:id
     @Patch(':id')
     @Roles(UserRole.ADMIN)
     update(@Param('id', ParseIntPipe) id: number, @Body() updateGameDto: UpdateGameDto) {
@@ -38,6 +49,8 @@ export class GamesController {
         return this.gamesService.update(id, updateGameDto);
     }
 
+    // ลบเกม (เฉพาะ Admin)
+    // DELETE /games/:id
     @Delete(':id')
     @Roles(UserRole.ADMIN)
     remove(@Param('id', ParseIntPipe) id: number) {

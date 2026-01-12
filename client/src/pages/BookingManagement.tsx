@@ -6,21 +6,43 @@ interface BookingManagementProps {
     onClose: () => void;
 }
 
+
+const TABLE_HEAD_STICKY = "bg-slate-800 text-slate-400 uppercase font-bold text-xs sticky top-0 z-10 shadow-md";
+const BADGE_ITEM = "text-xs bg-slate-700 px-2 py-0.5 rounded border border-white/5";
+const BTN_VIEW_SLIP = "text-xs bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 px-3 py-1 rounded hover:bg-indigo-500 hover:text-white transition";
+const BTN_ACTION_APPROVE = "bg-emerald-500 hover:bg-emerald-400 text-white p-1.5 rounded shadow-lg transition";
+const BTN_ACTION_REJECT = "bg-red-500 hover:bg-red-400 text-white p-1.5 rounded shadow-lg transition";
+const BADGE_STATUS_PAID = "px-2 py-1 rounded text-xs font-bold text-emerald-400 bg-emerald-400/10";
+const BADGE_STATUS_REJECTED = "px-2 py-1 rounded text-xs font-bold text-red-400 bg-red-400/10";
+const BADGE_STATUS_PENDING = "px-2 py-1 rounded text-xs font-bold text-yellow-400 bg-yellow-400/10";
+
+/**
+ * 🟡 BookingManagement Component
+ * ==========================================
+ * หน้าจอสำหรับ Admin เพื่อจัดการการจองทั้งหมด
+ * - ดูรายการจอง (List)
+ * - ตรวจสอบสลิปโอนเงิน (Verify Payment)
+ * - อนุมัติ/ปฏิเสธ การจอง (Approve/Reject)
+ */
 const BookingManagement: React.FC<BookingManagementProps> = ({ onClose }) => {
     const { token } = useAuth();
-    const [bookings, setBookings] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [selectedSlip, setSelectedSlip] = useState<string | null>(null);
 
+    // 1. State Management
+    const [bookings, setBookings] = useState<any[]>([]); // เก็บข้อมูลการจองทั้งหมด
+    const [loading, setLoading] = useState(true);        // สถานะการโหลดข้อมูล
+    const [selectedSlip, setSelectedSlip] = useState<string | null>(null); // เก็บ URL รูปสลิปที่กำลังดูอยู่
+
+    // 2. โหลดข้อมูล Booking ทั้งหมดเมื่อเปิดหน้านี้ (Component Mount)
     useEffect(() => {
         fetchBookings();
     }, []);
 
+    // ฟังก์ชันดึงข้อมูลจาก API
     const fetchBookings = async () => {
         try {
             if (token) {
                 const data = await getAllBookings(token);
-                // Ensure data is array
+                // ตรวจสอบว่าได้ Array จริงไหมเพื่อกัน Error
                 if (Array.isArray(data)) {
                     setBookings(data);
                 } else {
@@ -35,29 +57,37 @@ const BookingManagement: React.FC<BookingManagementProps> = ({ onClose }) => {
         }
     };
 
+    // 3. ฟังก์ชันเปลี่ยนสถานะการจอง (Update Booking Status)
+    // เช่น เปลี่ยนจาก PENDING -> CONFIRMED
     const handleStatusChange = async (id: number, status: string) => {
         if (!token) return;
         try {
             await updateBookingStatus(token, id, status);
-            fetchBookings();
+            fetchBookings(); // โหลดข้อมูลใหม่เพื่ออัปเดตหน้าจอทันที
         } catch (error) {
             alert("Failed to update status");
         }
     };
 
+    // 4. ฟังก์ชันตรวจสอบการชำระเงิน (Approve/Reject Payment)
+    // ใช้เมื่อ Admin กดปุ่ม ✅ หรือ ❌ หลังดูสลิป
     const handlePaymentAction = async (id: number, action: 'APPROVE' | 'REJECT') => {
         if (!token) return;
         if (!window.confirm(`Are you sure you want to ${action} this payment?`)) return;
 
         try {
+            // ถ้า Approve -> สถานะการจ่ายเงิน = PAID
+            // ถ้า Reject -> สถานะการจ่ายเงิน = REJECTED
             const status = action === 'APPROVE' ? 'PAID' : 'REJECTED';
             await updatePaymentStatus(token, id, status);
-            // If Approved, also confirm the booking
+
+            // Business Logic พิเศษ:
+            // ถ้าอนุมัติการจ่ายเงิน (APPROVE) -> ให้เปลี่ยนสถานะการจองเป็น "ยืนยันแล้ว" (CONFIRMED) ให้อัตโนมัติเลย
             if (action === 'APPROVE') {
                 await updateBookingStatus(token, id, 'CONFIRMED');
             }
-            fetchBookings();
-            setSelectedSlip(null);
+            fetchBookings(); // โหลดข้อมูลใหม่
+            setSelectedSlip(null); // ปิดหน้าต่างดูสลิป
         } catch (error) {
             alert("Failed to update payment status");
         }
@@ -79,7 +109,7 @@ const BookingManagement: React.FC<BookingManagementProps> = ({ onClose }) => {
 
             <div className="overflow-x-auto rounded-xl border border-slate-700 max-h-[500px] overflow-y-auto">
                 <table className="w-full text-left text-sm text-slate-300">
-                    <thead className="table-head-sticky">
+                    <thead className={TABLE_HEAD_STICKY}>
                         <tr>
                             <th className="px-6 py-4">ID</th>
                             <th className="px-6 py-4">User</th>
@@ -119,7 +149,7 @@ const BookingManagement: React.FC<BookingManagementProps> = ({ onClose }) => {
                                     <div className="flex flex-col gap-1">
                                         {booking.bookingItems && booking.bookingItems.length > 0 ? (
                                             booking.bookingItems.map((item: any) => (
-                                                <span key={item.id} className="badge-item">
+                                                <span key={item.id} className={BADGE_ITEM}>
                                                     {item.game?.title || 'Unknown Game'} (x{item.quantity})
                                                 </span>
                                             ))
@@ -134,7 +164,7 @@ const BookingManagement: React.FC<BookingManagementProps> = ({ onClose }) => {
                                     {booking.slipUrl ? (
                                         <button
                                             onClick={() => setSelectedSlip(booking.slipUrl)}
-                                            className="btn-view-slip"
+                                            className={BTN_VIEW_SLIP}
                                         >
                                             View Slip 📄
                                         </button>
@@ -143,9 +173,9 @@ const BookingManagement: React.FC<BookingManagementProps> = ({ onClose }) => {
                                     )}
                                 </td>
                                 <td className="px-6 py-4">
-                                    <span className={booking.paymentStatus === 'PAID' ? 'badge-status-paid' :
-                                        booking.paymentStatus === 'REJECTED' ? 'badge-status-rejected' :
-                                            'badge-status-pending'
+                                    <span className={booking.paymentStatus === 'PAID' ? BADGE_STATUS_PAID :
+                                        booking.paymentStatus === 'REJECTED' ? BADGE_STATUS_REJECTED :
+                                            BADGE_STATUS_PENDING
                                     }>
                                         {booking.paymentStatus || 'PENDING'}
                                     </span>
@@ -167,14 +197,14 @@ const BookingManagement: React.FC<BookingManagementProps> = ({ onClose }) => {
                                         <div className="flex gap-2 justify-end">
                                             <button
                                                 onClick={() => handlePaymentAction(booking.id, 'APPROVE')}
-                                                className="btn-action-approve"
+                                                className={BTN_ACTION_APPROVE}
                                                 title="Approve Payment"
                                             >
                                                 ✅
                                             </button>
                                             <button
                                                 onClick={() => handlePaymentAction(booking.id, 'REJECT')}
-                                                className="btn-action-reject"
+                                                className={BTN_ACTION_REJECT}
                                                 title="Reject Payment"
                                             >
                                                 ❌

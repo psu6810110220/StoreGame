@@ -11,18 +11,25 @@ import { UserRole } from '../users/user.entity';
 export class BookingsController {
     constructor(private readonly bookingsService: BookingsService) { }
 
-    @UseGuards(JwtAuthGuard)
+    // สร้างการจองใหม่
+    // POST /bookings
+    @UseGuards(JwtAuthGuard) // ต้อง Login ก่อน
     @Post()
     create(@Request() req, @Body() createBookingDto: CreateBookingDto) {
+        // req.user คือข้อมูล User คนที่กดจอง (ได้มาจาก Token)
         return this.bookingsService.createBooking(req.user, createBookingDto);
     }
 
+    // ดูประวัติการจองของตัวเอง
+    // GET /bookings/my
     @UseGuards(JwtAuthGuard)
     @Get('my')
     getMyBookings(@Request() req) {
         return this.bookingsService.getUserBookings(req.user);
     }
 
+    // ดูรายการจองทั้งหมด (เฉพาะ Admin)
+    // GET /bookings
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(UserRole.ADMIN)
     @Get()
@@ -30,6 +37,8 @@ export class BookingsController {
         return this.bookingsService.getAllBookings();
     }
 
+    // อัปเดตสถานะการจอง (เช่น จาก PENDING -> CONFIRMED)
+    // PATCH /bookings/:id/status
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(UserRole.ADMIN)
     @Patch(':id/status')
@@ -40,7 +49,8 @@ export class BookingsController {
         return this.bookingsService.updateBookingStatus(id, updateBookingStatusDto.status);
     }
 
-    // New Endpoint for updating Payment Status
+    // อัปเดตสถานะการจ่ายเงิน (Endpoint ใหม่)
+    // PATCH /bookings/:id/payment-status
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(UserRole.ADMIN)
     @Patch(':id/payment-status')

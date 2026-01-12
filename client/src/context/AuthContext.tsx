@@ -28,7 +28,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check LocalStorage first, then SessionStorage
+    // ✅ 1. ดึงข้อมูลจาก Storage เมื่อโหลดหน้าเว็บ (Rehydrate)
+    // เพื่อให้เวลา User กด Refresh หน้าจอ ข้อมูล Login จะได้ไม่หายไป
     const savedToken = localStorage.getItem('token') || sessionStorage.getItem('token');
     const savedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
 
@@ -38,34 +39,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (savedUser) {
       try {
-        const parsedUser = JSON.parse(savedUser);
+        const parsedUser = JSON.parse(savedUser); // แปลง JSON String กลับเป็น Object
         setUser(parsedUser);
       } catch (e) {
         console.error("Failed to parse user data", e);
-        // Clear both just in case
+        // ถ้าข้อมูลพัง ให้ลบทิ้งไปเลย (กัน Error ค้าง)
         localStorage.removeItem('user');
         sessionStorage.removeItem('user');
       }
     }
-    setLoading(false);
+    setLoading(false); // โหลดเสร็จแล้ว ปล่อยให้แสดงผลหน้าเว็บได้
   }, []);
 
   // ✅ 2. ฟังก์ชัน Login
   const login = (accessToken: string, userData: User, remember: boolean = true) => {
-    // อัปเดต State
+    // อัปเดต State ใน React (เพื่อให้หน้าจอรู้ว่าล็อกอินแล้ว)
     setToken(accessToken);
     setUser(userData);
 
+    // เลือกกระเป๋าที่จะเก็บ (Local = ถาวร, Session = ชั่วคราว/ปิดบราวเซอร์หาย)
     const storage = remember ? localStorage : sessionStorage;
 
-    // Clear the OTHER storage to avoid conflicts
+    // เคลียร์กระเป๋าอีกใบ เพื่อไม่ให้ข้อมูลตีกัน
     const otherStorage = remember ? sessionStorage : localStorage;
     otherStorage.removeItem('token');
     otherStorage.removeItem('user');
 
-    // อัปเดต Storage ที่เลือก
+    // เก็บ Token และข้อมูล User ลงกระเป๋าที่เลือก
     storage.setItem('token', accessToken);
-    storage.setItem('user', JSON.stringify(userData));
+    storage.setItem('user', JSON.stringify(userData)); // ต้องแปลง Object เป็น String ก่อนเก็บ
 
     console.log("✅ AuthContext Updated: Logged in as", userData.role, "| Remember:", remember);
 

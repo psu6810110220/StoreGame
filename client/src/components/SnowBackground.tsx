@@ -1,17 +1,29 @@
 import React from 'react';
 
+/**
+ * ❄️ SnowBackground Component
+ * ==========================================
+ * คอมโพเนนต์สำหรับสร้างเอฟเฟกต์หิมะตกเป็น Background
+ * เทคนิคที่ใช้: CSS Box-Shadow Animation
+ * 
+ * หลักการทำงาน:
+ * 1. สร้าง div กลมๆ เล็กๆ 1 อัน (Snow 1 เม็ด)
+ * 2. ใช้ box-shadow สร้างเงาของจุดนั้นซ้ำๆ ในตำแหน่งต่างๆ กัน (ได้หิมะหลายเม็ดโดยไม่ต้องสร้าง div เยอะ)
+ * 3. ใช้ @keyframes สั่งให้ box-shadow ทั้งแผงเลื่อนลงมา (translateY)
+ * 4. ทำ 3 Layer ที่มีความเร็วต่างกัน (Parallax Effect) เพื่อให้ดูมีมิติ
+ */
 const SnowBackground: React.FC = () => {
     return (
         <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden bg-transparent">
-            {/* Layer 1 - Seamless Pair */}
+            {/* Layer 1: หิมะเม็ดใหญ่ ใกล้ตา (ตกเร็ว) */}
             <div className="snow-layer layer-1"></div>
             <div className="snow-layer layer-1 offset-layer"></div>
 
-            {/* Layer 2 - Seamless Pair */}
+            {/* Layer 2: หิมะขนาดกลาง (ตกปานกลาง) */}
             <div className="snow-layer layer-2"></div>
             <div className="snow-layer layer-2 offset-layer"></div>
 
-            {/* Layer 3 - Seamless Pair */}
+            {/* Layer 3: หิมะเม็ดเล็ก ไกลตา (ตกช้า) */}
             <div className="snow-layer layer-3"></div>
             <div className="snow-layer layer-3 offset-layer"></div>
 

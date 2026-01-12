@@ -27,18 +27,31 @@ interface Booking {
     bookingItems: BookingItem[];
 }
 
+/**
+ * 🟡 MyBookings Component
+ * ==========================================
+ * หน้า "ประวัติการจองของฉัน"
+ * - ดึงข้อมูลการจองทั้งหมดของ User ที่ล็อกอินอยู่
+ * - แสดงสถานะ (Pending, Confirmed)
+ * - แสดงรายละเอียดสินค้าที่จองไว้
+ */
 const MyBookings: React.FC = () => {
     const { token } = useAuth();
     const navigate = useNavigate();
+
+    // State เก็บรายการจอง
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
 
+    // โหลดข้อมูลเมื่อเข้าหน้านี้
     useEffect(() => {
         const fetchBookings = async () => {
             try {
                 if (token) {
                     const data = await getMyBookings(token);
-                    // Handle potential decimal strings from backend
+
+                    // แปลงค่าเงินจาก String เป็น Number (Sanitize Data) 
+                    // เพราะบางที Database ส่งมาเป็น String "1500.00"
                     const sanitizedData = data.map((b: any) => ({
                         ...b,
                         totalAmount: parseFloat(b.totalAmount),

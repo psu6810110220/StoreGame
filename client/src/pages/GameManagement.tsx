@@ -14,15 +14,32 @@ interface Game {
     categories?: string[];
 }
 
+/**
+ * 🟡 GameManagement Component
+ * ==========================================
+ * หน้าจอสำหรับ Admin เพื่อจัดการข้อมูลเกม (CRUD)
+ * - Create: สร้างเกมใหม่
+ * - Read: ดูรายชื่อเกม
+ * - Update: แก้ไขข้อมูลเกม
+ * - Delete: ลบเกม
+ */
 const GameManagement: React.FC = () => {
     const { token, user } = useAuth();
-    const [games, setGames] = useState<Game[]>([]);
+
+    // 1. State Management
+    const [games, setGames] = useState<Game[]>([]); // เก็บรายการเกมทั้งหมด
+
+    // ควบคุมการเปิด/ปิด Modal สร้าง/แก้ไขเกม
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // เก็บเกมที่กำลังแก้ไข (ถ้าเป็น null แปลว่ากำลังสร้างใหม่)
     const [editingGame, setEditingGame] = useState<Game | null>(null);
+
+    // State สำหรับการค้นหาและ Filter
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
-    // Form State
+    // Form State (ข้อมูลในฟอร์ม ที่ User กำลังพิมพ์)
     const [formData, setFormData] = useState({
         title: "",
         description: "",
@@ -32,10 +49,12 @@ const GameManagement: React.FC = () => {
         categories: [] as string[],
     });
 
+    // โหลดข้อมูลเกมเมื่อหน้าเว็บเริ่มทำงาน
     useEffect(() => {
         fetchGames();
     }, []);
 
+    // ฟังก์ชันดึงข้อมูลเกมจาก API
     const fetchGames = async () => {
         try {
             if (token) {
@@ -47,16 +66,21 @@ const GameManagement: React.FC = () => {
         }
     };
 
+    // ฟังก์ชันบันทึกข้อมูล (Save)
+    // รองรับทั้งกรณี "สร้างใหม่" และ "แก้ไข"
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!token) return;
 
         try {
             if (editingGame) {
+                // กรณี: มีข้อมูล editingGame -> แปลว่าเป็นการแก้ไข (Update)
                 await updateGame(token, editingGame.id, formData);
             } else {
+                // กรณี: ไม่มี -> แปลว่าเป็นการสร้างใหม่ (Create)
                 await createGame(token, formData);
             }
+            // ปิด Modal และเคลียร์ค่า
             setIsModalOpen(false);
             setEditingGame(null);
             setFormData({
@@ -67,6 +91,7 @@ const GameManagement: React.FC = () => {
                 imageUrl: "",
                 categories: [],
             });
+            // โหลดข้อมูลล่าสุดจาก Server
             fetchGames();
         } catch (error) {
             alert("Error saving game: " + (error as any).message);
@@ -122,6 +147,10 @@ const GameManagement: React.FC = () => {
         return null;
     }
 
+    // ฟังก์ชันกรองข้อมูล (Filter Logic)
+    // จะแสดงผลเฉพาะเกมที่:
+    // 1. ชื่อตรงกับ Search Term (หรือ Tag ตรงก็ย่อมได้)
+    // 2. อยู่ใน Category ที่เลือกไว้อันใดอันหนึ่ง (หรือแสดงทั้งหมดถ้าไม่ได้เลือก)
     const filteredGames = games.filter(game => {
         const matchesSearch = game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             game.categories?.some(c => c.toLowerCase().includes(searchTerm.toLowerCase()));

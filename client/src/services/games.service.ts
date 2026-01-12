@@ -1,5 +1,7 @@
 const API_URL = "http://localhost:3000";
 
+// ดึงข้อมูลเกมทั้งหมด
+// GET /games
 export const getGames = async (token: string) => {
     const response = await fetch(`${API_URL}/games`, {
         headers: {
@@ -10,6 +12,8 @@ export const getGames = async (token: string) => {
     return response.json();
 };
 
+// สร้างเกมใหม่ (Admin)
+// POST /games
 export const createGame = async (token: string, gameData: any) => {
     const response = await fetch(`${API_URL}/games`, {
         method: "POST",
@@ -26,6 +30,8 @@ export const createGame = async (token: string, gameData: any) => {
     return response.json();
 };
 
+// แก้ไขข้อมูลเกม (Admin)
+// PATCH /games/:id
 export const updateGame = async (token: string, id: number, gameData: any) => {
     const response = await fetch(`${API_URL}/games/${id}`, {
         method: "PATCH",
@@ -42,6 +48,8 @@ export const updateGame = async (token: string, id: number, gameData: any) => {
     return response.json();
 };
 
+// ลบเกม (Admin)
+// DELETE /games/:id
 export const deleteGame = async (token: string, id: number) => {
     const response = await fetch(`${API_URL}/games/${id}`, {
         method: "DELETE",

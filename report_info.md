@@ -1,75 +1,125 @@
-# ข้อมูลสำหรับรายงานโครงงาน (Project Report Materials)
+# 📖 คัมภีร์อธิบายโค้ดฉบับจับมือทำ (Beginner Guide to StoreGame Code)
 
-## 1. คำอธิบายเกี่ยวกับโปรเจกต์โดยสังเขป (Project Description)
-ระบบจองเกมออนไลน์ (Game Booking Store) เป็นเว็บแอปพลิเคชันที่พัฒนาขึ้นเพื่ออำนวยความสะดวกในการค้นหาและจองเกมที่ผู้ใช้สนใจ โดยระบบรองรับการทำงานทั้งฝั่งผู้ดูแลระบบ (Admin) และผู้ใช้งานทั่วไป (User)
-โครงสร้างโปรเจกต์ประกอบด้วย:
-- **Backend (Server)**: พัฒนาด้วย **NestJS** เป็นเฟรมเวิร์ก Node.js ที่เน้นโครงสร้างแบบ Modular เชื่อมต่อฐานข้อมูล **PostgreSQL** ผ่าน **TypeORM**
-- **Frontend (Client)**: พัฒนาด้วย **React** (Vite) ใช้ **Tailwind CSS** ในการตกแต่งหน้าตาเว็บไซต์ให้ทันสมัย
+เอกสารนี้จะพาคุณทัวร์โค้ดทุกส่วนของโปรเจกต์ **StoreGame** อธิบายแบบภาษาคนเข้าใจง่าย เปรียบเทียบกับสิ่งรอบตัว พร้อมช่องทางลัดให้กดเข้าไปดูโค้ดจริงได้เลย!
 
-## 2. การเชื่อมโยงคำสั่ง AI กับโค้ดที่ได้ (AI Prompts & Generated Code)
+---
 
-### Prompt 1: "Implement Remember Me" (ระบบจำฉันไว้)
-**ความสำคัญ**: เพิ่มความสะดวกสบายให้ผู้ใช้ไม่ต้องล็อกอินใหม่
-*   **สิ่งที่ AI ทำ**:
-    *   แก้ไข `Login.tsx` เพิ่ม Checkbox เพื่อรับค่า `rememberMe`
-    *   แก้ไข `AuthContext.tsx` ให้มี Logic ตัดสินใจว่าถ้าเลือก Remember Me จะบันทึก Token ลง `localStorage` (อยู่ถาวรจนกว่าจะลบ), แต่ถ้าไม่เลือกจะเก็บใน `sessionStorage` (หายเมื่อปิดเบราว์เซอร์)
+## 🏗️ ภาพรวม: ร้านอาหารตามสั่ง (The Big Picture)
 
-### Prompt 2: "Game Categories Feature" (ระบบหมวดหมู่เกม)
-**ความสำคัญ**: ช่วยให้จัดการและค้นหาเกมได้ง่ายขึ้น
-*   **สิ่งที่ AI ทำ**:
-    *   **Backend**: เพิ่ม Entity Field `category` ใน `Game` entity และอัปเดต DTO (`CreateGameDto`, `UpdateGameDto`) เพื่อรองรับข้อมูลชุดใหม่
-    *   **Frontend**: แก้ไขตารางใน `GameManagement.tsx` ให้แสดง Badge หมวดหมู่ และเพิ่ม Logic การกรอง (Filter) ใน `GameList.tsx`
+ให้มองว่าเว็บไซต์ของเราคือ **"ร้านอาหารตามสั่ง"** ครับ
+1.  **Backend (Server)** = **"ในครัว"** (พ่อครัว, ตู้เย็น, คนคิดเงิน)
+2.  **Frontend (Client)** = **"หน้าร้าน & โต๊ะอาหาร"** (เมนู, พนักงานเสิร์ฟ, จานชาม)
+3.  **Database** = **"ตู้เย็นยักษ์"** (ที่เก็บวัตถุดิบและข้อมูลทั้งหมด)
 
-### Prompt 3: "Refine UI And Handle Git Push" (ปรับแต่ง UI ให้สวยงามระดับพรีเมียม)
-**ความสำคัญ**: คำสั่งนี้คือจุดเปลี่ยนที่ทำให้หน้าเว็บมีหน้าตา Modern (Glassmorphism), มีธีมเทศกาล (Snow Effect), และการใช้ Gradient สี
-*   **สิ่งที่ AI ทำ**:
-    *   สร้าง Component `SnowBackground.tsx` เพื่อทำ Effect หิมะตก
-    *   ปรับแก้ CSS Class ใน `Dashboard.tsx` และ `GameManagement.tsx` ให้ใช้ `backdrop-blur-md`, `bg-slate-800/50` (Glass Effect) และ `bg-gradient-to-r` เพื่อความสวยงาม
+---
 
-### Prompt 4: "Admin Role & Access Control" (ระบบสิทธิ์ผู้ใช้งาน)
-**ความสำคัญ**: ความปลอดภัยและการแบ่งแยกหน้าที่
-*   **สิ่งที่ AI ทำ**:
-    *   **Backend**: ใน `users.service.ts` มีการสร้าง Seed Admin (Auto-create admin user) เมื่อรันระบบครั้งแรก
-    *   **Frontend**: ใน `Dashboard.tsx` ใช้เงื่อนไข `{user.role === 'admin' && ...}` เพื่อซ่อน/แสดงปุ่มเมนูจัดการร้านค้า
+## 🍳 ส่วนที่ 1: ในครัว (Backend - NestJS)
 
-### Prompt 5: "CSS Optimization & Clean Code" (การปรับปรุงโครงสร้าง CSS และประสิทธิภาพ)
-**ความสำคัญ**: การเขียนโค้ดให้อ่านง่าย (Readability) และลดภาระเครื่อง (Performance)
-*   **สิ่งที่ AI ทำ**:
-    *   **Refactoring**: ย้าย Class ยาวๆ ของ Tailwind (เช่น Gradient สีปุ่ม) ไปเก็บเป็น Class มาตรฐานใน `index.css` (เช่น `.btn-gradient-primary`) ทำให้ไฟล์ React สะอาดตา
-    *   **Snow Optimization**: เปลี่ยนวิธีทำหิมะตกจากที่ใช้ `div` 50 ตัว มาเป็นเทคนิค `CSS Box-Shadow` (ใช้ div หลักแค่ 3 ตัว) ทำให้ลดภาระ DOM ของ Browser ไปได้อย่างมหาศาล
+ไฟล์ทั้งหมดจะอยู่ที่โฟลเดอร์ `server` ครับ นี่คือสมองของร้าน
 
-## 3. เจาะลึกการทำงานของไฟล์สำคัญ (Detailed Code Explanation)
+### 1. จุดเริ่มต้น (ประตูครัว)
+*   **[main.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/main.ts)**
+    *   **คืออะไร**: กุญแจดอกแรกที่ใช้เปิดร้าน
+    *   **ทำอะไร**: สั่งให้ Server เริ่มทำงานที่ Port 3000 (เหมือนเปิดประตูร้าน), ตั้งค่า CORS (อนุญาตให้ลูกค้ากลุ่มไหนเข้าได้บ้าง), เปิดระบบตรวจสอบความถูกต้อง (ValidationPipe)
 
-### 📂 ฝั่ง Server (Backend)
+### 2. สมองหลัก (ผู้จัดการร้าน)
+*   **[app.module.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/app.module.ts)**
+    *   **คืออะไร**: แผนผังองค์กร
+    *   **ทำอะไร**: บอกว่าร้านนี้มีแผนกอะไรบ้าง (Auth, Games, Users, Bookings) และเชื่อมต่อกับตู้เย็น (Database) ยังไง
 
-#### 1. `server/src/auth/auth.service.ts` (บริการยืนยันตัวตน)
-ทำหน้าที่เหมือนยามเฝ้าประตู:
-*   `validateUser(username, pass)`: ฟังก์ชันนี้จะรับชื่อผู้ใช้และรหัสผ่านดิบๆ มา แล้วใช้ `bcrypt.compare()` เพื่อเช็คกับรหัสผ่านที่เข้ารหัส (Hash) ในฐานข้อมูล ถ้าตรงกันถึงจะปล่อยผ่าน
-*   `login(user)`: เมื่อยืนยันตัวตนผ่าน ฟังก์ชันนี้จะสร้าง **JWT Token** (เหมือนบัตรผ่านทาง) โดยในบัตรจะระบุ `id`, `username`, และ `role` เพื่อให้ผู้ใช้นำไปยื่นเวลาจะขอข้อมูลอื่นๆ
+### 3. แผนกต่างๆ (Modules)
 
-#### 2. `server/src/users/users.service.ts` (บริการจัดการผู้ใช้)
-ทำหน้าที่ดูแลข้อมูลพนักงานและลูกค้า:
-*   `seedAdmin()`: (ทำงานอัตโนมัติเมื่อเริ่ม Server) เช็คว่ามี Admin ชื่อ 'superadmin' หรือยัง ถ้าไม่มีจะสร้างให้ทันที เพื่อป้องกันปัญหาระบบไม่มีคนดูแล
-*   `create(createUserDto)`: สมัครสมาชิกใหม่ โดยสิ่งสำคัญคือบรรทัด `role: UserRole.USER` ที่กำหนดให้ทุกคนที่สมัครเองเป็น User ธรรมดาเสมอเพื่อความปลอดภัย
+#### 🛡️ แผนก รปภ. (Auth Module) - ดูแลเรื่องเข้า/ออก
+*   **[auth.service.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/auth/auth.service.ts)**
+    *   **คืออะไร**: หัวหน้า รปภ.
+    *   **ทำอะไร**: เช็คว่า "สมุดพก" (Token) ที่ยื่นมาเป็นของจริงไหม, ตรวจรหัสผ่าน login ว่าตรงกับในฐานข้อมูลไหม
+*   **[jwt.strategy.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/auth/jwt.strategy.ts)**
+    *   **คืออะไร**: เครื่องสแกนบัตร
+    *   **ทำอะไร**: คอยดักจับทุกคำขอ และอ่านข้อมูลจาก Token (ที่แนบมาใน Header)
+*   **[auth.controller.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/auth/auth.controller.ts)**
+    *   **คืออะไร**: เคาน์เตอร์ติดต่อ รปภ.
+    *   **ทำอะไร**: รับเรื่อง `POST /auth/login` หรือ `POST /auth/register`
 
-#### 3. `server/src/games/games.service.ts` (บริการคลังสินค้า)
-ทำหน้าที่จัดการสต็อกเกม:
-*   `findAll()`: ดึงข้อมูลเกมทั้งหมดจากตารางใน DB
-*   `update(id, data)`: รับข้อมูลใหม่มาแก้ไข โดยใช้ `Object.assign` เพื่อเคลือบข้อมูลเก่า แล้วสั่ง Save ลง DB
+#### 🎮 แผนกคลังสินค้า (Games Module) - ดูแลสินค้าเกม
+*   **[game.entity.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/entities/game.entity.ts)**
+    *   **คืออะไร**: แบบฟอร์มสินค้า
+    *   **ทำอะไร**: กำหนดว่า "เกม 1 เกม" ต้องมีข้อมูลอะไรบ้าง (ชื่อ, ราคา, รูปภาพ, สต็อก)
+*   **[games.controller.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/games/games.controller.ts)**
+    *   **คืออะไร**: พนักงานรับออเดอร์
+    *   **ทำอะไร**: รับคำสั่งเช่น "ขอดูเกมทั้งหมดหน่อย" (`GET /games`) หรือ "เพิ่มเกมใหม่หน่อย" (`POST /games`)
+*   **[games.service.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/games/games.service.ts)**
+    *   **คืออะไร**: พนักงานคลังสินค้า
+    *   **ทำอะไร**: เดินไปหยิบของในตู้เย็น (Database), ตัดสต็อก, หรือเอาของใหม่วางบนชั้น
 
-### 📂 ฝั่ง Client (Frontend)
+#### 🛒 แผนกบัญชีและการขาย (Bookings Module) - ดูแลการจอง
+*   **[booking.entity.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/entities/booking.entity.ts)**
+    *   **คืออะไร**: ใบเสร็จรับเงิน
+    *   **ทำอะไร**: เก็บข้อมูลว่า ใครซื้อ? ซื้อเมื่อไหร่? จ่ายเงินหรือยัง?
+*   **[bookings.service.ts](file:///c:/Users/Windows%2011/StoreGame/server/src/bookings/bookings.service.ts)**
+    *   **คืออะไร**: พนักงานบัญชี
+    *   **ทำอะไร**:
+        *   คำนวณราคารวม
+        *   **สำคัญมาก**: ล็อคของ (Transaction) เพื่อไม่ให้คนซื้อชนกัน (ตัดสต็อกอย่างแม่นยำ)
 
-#### 1. `client/src/context/AuthContext.tsx` (ศูนย์กลางข้อมูลผู้ใช้)
-ทำหน้าที่เหมือนกระเป๋าสตางค์ที่เก็บ "บัตรผ่าน" (Token):
-*   **Persistence (การคงสภาพ)**: ใช้ `useEffect` ทำงานทันทีที่เปิดเว็บ เพื่อเช็ค `localStorage` ว่ามี Token ค้างอยู่ไหม ถ้ามีให้เอามาใส่ใน State (`setUser`) ทันที ทำให้กด Refresh แล้วไม่หลุด
-*   **Login Function**: รับ Token มาเก็บ และเลือกว่าจะเก็บลง LocalStorage หรือ SessionStorage ตาม Checkbox 'Remember Me'
+---
 
-#### 2. `client/src/pages/Dashboard.tsx` (หน้าควบคุมหลัก)
-ทำหน้าที่เป็นหน้าจอหลักที่รวมทุกอย่าง:
-*   **Role-Based Rendering**: บรรทัด `{user?.role === 'admin' && (...)}` คือ Logic สำคัญที่บอกว่า "ถ้าเป็น Admin ถึงจะเห็นส่วนควบคุมนี้" ทำให้เราใช้หน้า Dashboard เดียวกันได้ทั้ง Admin และ User
-*   **Layout Structure**: แบ่งเป็น Navbar (บน), Status Section (แสดงชื่อ/Role), Admin Panel (ซ่อน/แสดง), และ Game List (รายการสินค้า)
+## 🍽️ ส่วนที่ 2: หน้าร้าน (Frontend - React)
 
-#### 3. `client/src/pages/GameManagement.tsx` (หน้าจัดสต็อกเฉพาะ Admin)
-*   **State Management**: ใช้ `useState` เก็บข้อมูลฟอร์ม (`formData`) สำหรับเพิ่ม/แก้ไขเกม
-*   **Preview Image**: มีการทำ Real-time Preview รูปภาพปกเกมทันทีที่ Admin กรอก URL
-*   **Category Filter**: มีปุ่มกดเลือก Filter หมวดหมู่แบบ `toggle` (เลือกได้หลายอัน) เพื่อกรองดูรายการเกมในตาราง
+ไฟล์ทั้งหมดอยู่ที่ `client` ครับ นี่คือสิ่งที่ลูกค้า (User) เห็นและกดเล่น
+
+### 1. ประตูหน้าร้าน
+*   **[main.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/main.tsx)**
+    *   **คืออะไร**: จุดแรกที่ลูกค้าเดินเข้า
+    *   **ทำอะไร**: เอา React ไปแปะลงในหน้าเว็บ (`root`)
+*   **[App.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/App.tsx)**
+    *   **คืออะไร**: ป้ายบอกทาง
+    *   **ทำอะไร**: บอกว่าถ้าพิมพ์ URL นี้ ให้ไปโผล่หน้าจอไหน (Routing) เช่น `/login` ไปหน้า Login
+
+### 2. สมองส่วนกลาง (Context)
+*   **[AuthContext.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/context/AuthContext.tsx)**
+    *   **คืออะไร**: บัตรสมาชิกที่พกติดตัวตลอด
+    *   **ทำอะไร**: จำว่า "ตอนนี้ใคร Login อยู่?", "มีสิทธิ์เป็น Admin ไหม?". ถ้ากด F5 (Refresh) ก็จะมาเช็คที่นี่แหละว่ายัง Login อยู่หรือเปล่า (ใช้ `useEffect` เช็ค LocalStorage)
+*   **[CartContext.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/context/CartContext.tsx)**
+    *   **คืออะไร**: ตะกร้าช้อปปิ้งส่วนตัว
+    *   **ทำอะไร**: จำว่าเราหยิบเกมอะไรใส่มือไว้บ้าง ก่อนที่จะกดจ่ายเงิน
+
+### 3. พนักงานวิ่งส่งของ (Services)
+*   **[games.service.ts](file:///c:/Users/Windows%2011/StoreGame/client/src/services/games.service.ts)**
+*   **[bookings.service.ts](file:///c:/Users/Windows%2011/StoreGame/client/src/services/bookings.service.ts)**
+    *   **คืออะไร**: คนวิ่งเอกสาร
+    *   **ทำอะไร**: รับคำสั่งจากหน้าจอ (Page) แล้ววิ่งไปคุยกับหลังร้าน (API/Backend) ผ่าน `fetch` หรือ `axios` แล้ววิ่งกลับมารายงานผล
+
+### 4. หน้าจอต่างๆ (Pages)
+
+#### 🏠 หน้าแรก (Dashboard)
+*   **[Dashboard.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/pages/Dashboard.tsx)**
+    *   **คืออะไร**: แผงควบคุมหลัก
+    *   **ทำอะไร**:
+        *   แสดงเมนูบาร์ (Navbar)
+        *   ถ้าเป็น Admin จะโชว์ปุ่มพิเศษ (Manage Games, Manage Users)
+        *   เรียก Component `GameList` มาโชว์รายการเกม
+
+#### 📝 หน้าจัดการของผู้ดูแล (Admins)
+*   **[GameManagement.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/pages/GameManagement.tsx)**
+    *   **ทำอะไร**: ตารางรายชื่อเกม มีปุ่ม แก้ไข/ลบ และฟอร์มเพิ่มเกมใหม่
+*   **[BookingManagement.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/pages/BookingManagement.tsx)**
+    *   **ทำอะไร**: ตารางดูว่าใครจองอะไรมาบ้าง กดเปลี่ยนสถานะได้ (Pending -> Paid)
+
+#### 👤 หน้าลูกค้า (Users)
+*   **[MyBookings.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/pages/MyBookings.tsx)**
+    *   **ทำอะไร**: ดึงประวัติการจองของ "ตัวเอง" มาดู (ใช้ `getMyBookings` จาก service)
+
+### 5. ของตกแต่ง (Components)
+*   **[SnowBackground.tsx](file:///c:/Users/Windows%2011/StoreGame/client/src/components/SnowBackground.tsx)**
+    *   **คืออะไร**: วอลเปเปอร์หิมะ
+    *   **ทำอะไร**: ใช้ CSS วาดจุดสีขาวๆ แล้วสั่ง `animation` ให้มันไหลลงมาเรื่อยๆ (ไม่ได้ใช้ Javascript คำนวณเยอะ เพื่อความลื่น)
+
+---
+
+## 🛠️ วิธีการอ่านโค้ดให้เข้าใจ
+1.  **เริ่มจาก "หน้าจอ" (Page)**: ดูว่าหน้านั้นมัน import service อะไรมาบ้าง
+2.  **ตามไปดู "Service"**: ดูว่ามันยิงไปที่ URL ไหนของ Server
+3.  **กระโดดไป "Controller" (Backend)**: ดูว่า URL นั้นใครเป็นคนรับเรื่อง
+4.  **ดู "Service" (Backend)**: ดูว่าเขาไปหยิบข้อมูลจาก Database ยังไง
+
+ขอให้สนุกกับการเรียนรู้นะครับ! ถ้าสงสัยจุดไหน จิ้มลิ้งก์เข้าไปดูไส้ในได้เลย! 🚀👨‍💻
